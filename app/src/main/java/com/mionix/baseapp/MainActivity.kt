@@ -77,27 +77,27 @@ class MainActivity : AppCompatActivity() {
         if (currentUser == null) {
             sendUserToLoginActivity()
         } else {
-            VerifyUserExistance()
+            //VerifyUserExistance()
         }
     }
-    private fun VerifyUserExistance() {
-        val currentUerID = mAuth.currentUser!!.uid
-
-        RootRef.child("Users").child(currentUerID).addValueEventListener(object :
-            ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.child("name").exists()) {
-                    Toast.makeText(this@MainActivity, "Welcome" + "  " + dataSnapshot.child("name").value!!.toString(), Toast.LENGTH_SHORT).show()
-                } else {
-                    //SendUserToSettingsActivity()
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
-        })
-    }
+//    private fun VerifyUserExistance() {
+//        val currentUerID = mAuth.currentUser!!.uid
+//
+//        RootRef.child("Users").child(currentUerID).addValueEventListener(object :
+//            ValueEventListener {
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                if (dataSnapshot.child("name").exists()) {
+//                    Toast.makeText(this@MainActivity, "Welcome" + "  " + dataSnapshot.child("name").value!!.toString(), Toast.LENGTH_SHORT).show()
+//                } else {
+//                    //SendUserToSettingsActivity()
+//                }
+//            }
+//
+//            override fun onCancelled(databaseError: DatabaseError) {
+//
+//            }
+//        })
+//    }
     private fun sendUserToLoginActivity() {
         val loginIntent = Intent(this@MainActivity, LoginActivity::class.java)
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

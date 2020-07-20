@@ -11,18 +11,18 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.iid.FirebaseInstanceId
 import com.mionix.baseapp.MainActivity
 import com.mionix.baseapp.R
+import com.mionix.baseapp.model.UserModel
 import com.mionix.baseapp.utils.KeyboardUtils.hideSoftKeyboard
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.fragment_main_my_page.*
 
 class LoginActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
-
     private lateinit var loadingBar: ProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +31,6 @@ class LoginActivity : AppCompatActivity() {
         handleOnclick()
         setUpActionKeyBoard(clLogin)
     }
-
     private fun handleOnclick() {
         loginButton.setOnClickListener {  allowUserToLogin()  }
     }
