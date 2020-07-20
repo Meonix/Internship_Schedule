@@ -12,10 +12,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.mionix.baseapp.ui.activity.LoginActivity
+import com.mionix.baseapp.ui.activity.SettingActivity
 import com.mionix.baseapp.ui.fragment.MainHomeFragment
 import com.mionix.baseapp.ui.fragment.MainMyPageFragment
+import com.mionix.baseapp.utils.onClickThrottled
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import kotlinx.android.synthetic.main.layout_toolbar_view.view.*
 
 class MainActivity : AppCompatActivity() {
@@ -34,8 +37,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         currentUser = mAuth.currentUser
+        setupView()
         setupFragments()
         setupBottomNavigationBar()
+    }
+
+    private fun setupView() {
+        toolbar.ivLeft.onClickThrottled {
+            val intent = Intent(this@MainActivity,SettingActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupBottomNavigationBar() {
