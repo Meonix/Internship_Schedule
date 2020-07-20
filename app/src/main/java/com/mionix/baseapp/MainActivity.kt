@@ -1,90 +1,107 @@
 package com.mionix.baseapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.Observer
-import com.mionix.baseapp.model.local.Preferences
-import com.mionix.baseapp.ui.base.BaseActivity
-import com.mionix.baseapp.ui.base.BaseWebView
-import com.mionix.baseapp.viewmodel.LovePercentViewmodel
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.mionix.baseapp.ui.activity.LoginActivity
+import com.mionix.baseapp.ui.fragment.MainHomeFragment
+import com.mionix.baseapp.ui.fragment.MainMyPageFragment
+import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlinx.android.synthetic.main.layout_toolbar_view.view.*
 
-class MainActivity : BaseActivity() {
-    private val mPreferences by inject<Preferences>()
-    private val mLovePercentViewmodel : LovePercentViewmodel by viewModel()
+class MainActivity : AppCompatActivity() {
+    private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var RootRef: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private var currentUser: FirebaseUser? = null
+
+
+    lateinit var homeFragment: MainHomeFragment
+    lateinit var mypageFragment: MainMyPageFragment
+    lateinit var currentFragment: Fragment
+    lateinit var fragmentManager: FragmentManager
+//    private val mPreferences by inject<Preferences>()
+//    private val mLovePercentViewmodel : LovePercentViewmodel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        mLovePercentViewmodel.getPercentage("Duy","My")
-        mLovePercentViewmodel.percentage.observe(this, Observer {
-            Toast.makeText(this,it.percentage.toString(),Toast.LENGTH_SHORT).show()
+        currentUser = mAuth.currentUser
+        setupFragments()
+        setupBottomNavigationBar()
+    }
+
+    private fun setupBottomNavigationBar() {
+        navigation.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    if (currentFragment === homeFragment)
+                        fragmentManager.beginTransaction().show(homeFragment).commit()
+                    else
+                        fragmentManager.beginTransaction().hide(currentFragment).show(homeFragment).commit()
+                    currentFragment = homeFragment
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.navigation_mypage -> {
+                    fragmentManager.beginTransaction().hide(currentFragment).show(mypageFragment).commit()
+                    currentFragment = mypageFragment
+                    return@OnNavigationItemSelectedListener true
+                }
+            }
+            false
         })
-//        val mainWebView = BaseWebView()
-//        val a = "<!-- guidanceレイアウト用CSSの読み込み / -->\n" +
-//                "        <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.at-s.com/shinsotsu/2021/css/guidance_layout.css\" media=\"all\" />\n" +
-//                "\n" +
-//                "        <!-- guidance / -->\n" +
-//                "        <div class=\"editGuidance\">\n" +
-//                "    <p class=\"editGuidanceTitleButton\"><a href=\"#table_kigyo_list_up\" data-ajax=\"false\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/guidence_button_list.png\" alt=\"参加企業一覧\" /></a></p>\n" +
-//                "    <p class=\"editGuidanceImagePC\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_pc_01.png\" alt=\"\" /></p>\n" +
-//                "    <p class=\"editGuidanceImageSP\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_sp_01.png\" alt=\"\" /></p>\n" +
-//                "    </div>\n" +
-//                "        <!-- / guidance -->\n" +
-//                "\n" +
-//                "\n" +
-//                "\n" +
-//                "        <!-- guidance / -->\n" +
-//                "        <div class=\"editGuidance editGuidance009CDC\">\n" +
-//                "    <p class=\"editGuidanceImagePC\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_pc_02.png\" alt=\"\" /></p>\n" +
-//                "    <p class=\"editGuidanceImageSP\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_sp_02.png\" alt=\"\" /></p>\n" +
-//                "    </div>\n" +
-//                "        <!-- / guidance -->\n" +
-//                "\n" +
-//                "        <!-- guidance / -->\n" +
-//                "        <div class=\"editGuidance editGuidance009CDC\">\n" +
-//                "    <p class=\"editGuidanceImagePC\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_pc_03.png\" alt=\"\" /></p>\n" +
-//                "    <p class=\"editGuidanceImageSP\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_sp_03.png\" alt=\"\" /></p>\n" +
-//                "    </div>\n" +
-//                "        <!-- / guidance -->\n" +
-//                "\n" +
-//                "        <!-- guidance / -->\n" +
-//                "        <div class=\"editGuidance editGuidanceSSeminer editGuidanceSSeminer009CDC\">\n" +
-//                "    <p class=\"editGuidanceSSeminerTitle colorFFFFFF\">☆ 新卒のかんづめ2021に会員登録するとスマホでラクラク入場ができます！ ☆</p>\n" +
-//                "    <p class=\"colorFFFFFF\">※受付時に、係員に就活イベント受付QRコードを表示したスマホ画面をお見せください。</p>\n" +
-//                "    <p class=\"colorFFFFFF\">就活イベント受付QRコードはマイボードより表示できます。</p>\n" +
-//                "    <p class=\"colorFFFFFF\">【QRコード表示の手順】</p>\n" +
-//                "    <p class=\"colorFFFFFF\">スマホでマイボードにログイン → プロフィール → ページ下部の就活イベントQRコード「QRコードを表示」をタップ</p>\n" +
-//                "    <p><a href=\"https://ssl.at-s.com/shinsotsu/2021/smph_gakusei/sgakLogin.aspx?r=sgak05720\" class=\"editGuidanceSSeminerLink\">QRコードの表示はこちらから</a></p>\n" +
-//                "    <p class=\"colorFFFFFF\">※QRコードをご利用いただけない場合は、当日会場にて就活イベント受付カードへのご記入をお願いいたします。</p>\n" +
-//                "    </div>\n" +
-//                "        <!-- / guidance -->\n" +
-//                "\n" +
-//                "        <!-- guidance / -->\n" +
-//                "        <div class=\"editGuidance editGuidance009CDC\">\n" +
-//                "    <ul class=\"guidanceContentsItemButton\">\n" +
-//                "    <li><a href=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/guidance_qr.pdf\" target=\"_blank\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/guidence_button_item_03.png\" alt=\"受付QRコード表示方法\" /></a></li>\n" +
-//                "    <li><a href=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/guidance_sankahouhou.pdf\" target=\"_blank\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/guidence_button_item_04.png\" alt=\"企業ブース訪問方法\" /></a></li>\n" +
-//                "    </ul>\n" +
-//                "    </div>\n" +
-//                "        <!-- / guidance -->\n" +
-//                "\n" +
-//                "        <!-- guidance / -->\n" +
-//                "        <div class=\"editGuidance editGuidanceFFFFFF\">\n" +
-//                "    <p class=\"editGuidanceImagePC\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_pc_04.png\" alt=\"\" /></p>\n" +
-//                "    <p class=\"editGuidanceImageSP\"><img src=\"https://ssl.at-s.com/shinsotsu/2021/images/guidance/20200704shizuoka/index_new_sp_04.png\" alt=\"\" /></p>\n" +
-//                "    </div>\n" +
-//                "        <!-- / guidance -->"
-//        mainWebView.setupWebView(a,webView)
     }
 
-    override fun onClickActionLeftListener() {
+    private fun setupFragments() {
+        fragmentManager = supportFragmentManager
 
+        homeFragment = MainHomeFragment.newInstance()
+        mypageFragment = MainMyPageFragment.newInstance()
+
+        currentFragment = homeFragment
+
+        fragmentManager.beginTransaction().add(R.id.contentContainer, mypageFragment, "mypageFragment").commit()
+        fragmentManager.beginTransaction().hide(mypageFragment).commit()
+        fragmentManager.beginTransaction().add(R.id.contentContainer, homeFragment, "homeFragment").commit()
     }
 
-    override fun setTitleToolbar(): String? {
-        return "Base"
+    override fun onStart() {
+        super.onStart()
+        if (currentUser == null) {
+            sendUserToLoginActivity()
+        } else {
+            VerifyUserExistance()
+        }
+    }
+    private fun VerifyUserExistance() {
+        val currentUerID = mAuth.currentUser!!.uid
+
+        RootRef.child("Users").child(currentUerID).addValueEventListener(object :
+            ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.child("name").exists()) {
+                    Toast.makeText(this@MainActivity, "Welcome" + "  " + dataSnapshot.child("name").value!!.toString(), Toast.LENGTH_SHORT).show()
+                } else {
+                    //SendUserToSettingsActivity()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+
+            }
+        })
+    }
+    private fun sendUserToLoginActivity() {
+        val loginIntent = Intent(this@MainActivity, LoginActivity::class.java)
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(loginIntent)
+        finish()
     }
 }

@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Internship Schedule</string>
     <string name="ok">OK</string>
+    <string name="navigation_home">Home</string>
+    <string name="navigation_mypage">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
