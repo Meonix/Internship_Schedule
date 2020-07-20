@@ -1,5 +1,6 @@
 package com.mionix.baseapp.ui.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,19 +14,27 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mionix.baseapp.R
+import com.mionix.baseapp.model.DateModel
 import com.mionix.baseapp.model.UserModel
 import com.mionix.baseapp.ui.activity.CreateAccountActivity
+import com.mionix.baseapp.ui.custom.CustomCalendar
 import com.mionix.baseapp.utils.KeyboardUtils
 import com.mionix.baseapp.utils.onClickThrottled
 import kotlinx.android.synthetic.main.activity_create_account.*
 import kotlinx.android.synthetic.main.fragment_main_my_page.*
 import kotlinx.android.synthetic.main.fragment_main_my_page.btCreateAccount
+import java.util.HashMap
 
 class MainMyPageFragment : Fragment() {
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
     private var userModel: UserModel? = null
     private var currentUser = mAuth.currentUser
+    private var userInfo = HashMap<String, Any>()
+    private var dateModelStart = DateModel()
+    private var dateModelEnd = DateModel()
+    private var mStartDateFrom = ""
+    private val mCustomCalendar = CustomCalendar()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -34,8 +43,52 @@ class MainMyPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUpData()
         setUpActionKeyBoard(rlFragmentMyPage)
+        setupEventClick()
 
     }
+
+    private fun setupEventClick() {
+        btChange.onClickThrottled {
+            userInfo["name"]= etName.text.toString()
+            userInfo["email"] = edMail.text.toString()
+            userInfo["phone"] = edPhone.text.toString()
+            var sex = 2
+            when(spSex.selectedItemPosition){
+                0 -> sex = 1
+                1 -> sex = 2
+                2 -> sex = 3
+            }
+            userInfo["sex"]  = sex
+            userInfo["birth_day"] = tvBirthday.text.toString()
+            usersRef.child(currentUser?.uid.toString()).updateChildren(userInfo)
+        }
+        tvBirthday.setOnClickListener {
+            /* if(birthday!="null"){
+                 mCustomCalendar.setupDate(birthday.substring(8,10).toInt(),(birthday.substring(5,7).toInt()-1),birthday.substring(0,4).toInt(),datePickerEditUser)
+             }*/
+            llPickerDate.visibility = View.VISIBLE
+            btChange.visibility = View.GONE
+
+            tvPickedDate.setOnClickListener {
+                dateModelStart = mCustomCalendar.startDate(datePickerEditUser,dateModelEnd)
+                mStartDateFrom = String.format("%02d",(dateModelStart.month+1)).plus("/")
+                    .plus(String.format("%02d",dateModelStart.day)).plus("/")
+                    .plus(dateModelStart.year.toString())
+
+
+                tvBirthday.text = mStartDateFrom
+                btChange.visibility = View.VISIBLE
+                llPickerDate.visibility = View.GONE
+            }
+//            tvNullBirthDay.setOnClickListener {
+//                llPickerDate.visibility = View.GONE
+//                btChange.visibility = View.VISIBLE
+//                tvBirthday.text = ""
+//            }
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private fun setUpActionKeyBoard(view: View){
         // Set up touch listener for non-text box views to hide keyboard.
         // Set up touch listener for non-text box views to hide keyboard.
@@ -71,12 +124,13 @@ class MainMyPageFragment : Fragment() {
         if(userModel?.postion!=null){
             tvInternPosition.text = userModel?.postion
         }
+        if(context!= null){
+            val spinnerLeft = arrayOf("Nam","Nữ","Khác")
+            val arrayAdapterLeft = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerLeft)
+            spSex.adapter = arrayAdapterLeft
+        }
         if(userModel?.sex!=null){
-            if(context!= null){
-                val spinnerLeft = arrayOf("Nam","Nữ","Khác")
-                val arrayAdapterLeft = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerLeft)
-                spSex.adapter = arrayAdapterLeft
-            }
+
             when(userModel?.sex){
                 1->spSex.setSelection(0)
                 2->spSex.setSelection(1)
