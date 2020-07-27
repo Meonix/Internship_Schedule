@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="#bdc3c7"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.fragment.RegisterCalFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/exOneAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/example_1_bg_light"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <include
+            android:id="@+id/legendLayout"
+            layout="@layout/calendar_day_legend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.kizitonwose.calendarview.CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:cv_dayViewResource="@layout/example_1_calendar_day"
+            custom:cv_orientation="horizontal"
+            custom:cv_outDateStyle="endOfRow"
+            custom:cv_inDateStyle="allMonths"
+            custom:cv_scrollMode="paged" />
+
+        <Spinner
+            android:layout_gravity="center"
+            android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+            android:id="@+id/spTypeOfTime"
+            android:layout_width="200dp"
+            android:spinnerMode="dropdown"
+            android:layout_margin="10dp"
+            android:gravity="start"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

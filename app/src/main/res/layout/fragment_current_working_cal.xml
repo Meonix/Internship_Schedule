@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="#bdc3c7"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.fragment.CurrentWorkingCalFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/exOneAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/example_1_bg_light"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <include
+            android:id="@+id/legendLayout"
+            layout="@layout/calendar_day_legend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.kizitonwose.calendarview.CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:cv_dayViewResource="@layout/example_1_calendar_day"
+            custom:cv_orientation="horizontal"
+            custom:cv_outDateStyle="endOfRow"
+            custom:cv_inDateStyle="allMonths"
+            custom:cv_scrollMode="paged" />
+
+        <CheckBox
+            android:id="@+id/weekModeCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:buttonTint="@color/example_1_white"
+            android:padding="2dp"
+            android:text="Week mode"
+            android:textColor="@color/example_1_white"
+            android:textSize="18sp"
+            android:layout_gravity="bottom|center_horizontal" />
+
+    </FrameLayout>
+</LinearLayout>
