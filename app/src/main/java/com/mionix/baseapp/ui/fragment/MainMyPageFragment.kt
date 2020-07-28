@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
@@ -22,7 +23,6 @@ import com.mionix.baseapp.utils.KeyboardUtils
 import com.mionix.baseapp.utils.onClickThrottled
 import kotlinx.android.synthetic.main.activity_create_account.*
 import kotlinx.android.synthetic.main.fragment_main_my_page.*
-import kotlinx.android.synthetic.main.fragment_main_my_page.btCreateAccount
 import java.util.HashMap
 
 class MainMyPageFragment : Fragment() {
@@ -49,8 +49,12 @@ class MainMyPageFragment : Fragment() {
 
     private fun setupEventClick() {
         btChange.onClickThrottled {
-            userInfo["name"]= etName.text.toString()
-            userInfo["email"] = edMail.text.toString()
+            if(edNewPassword.text.toString() != ""){
+                mAuth.currentUser?.updatePassword(edNewPassword.text.toString().trim())
+            }
+            userInfo["first_name"]= etFirstName.text.toString()
+            userInfo["last_name"]= etLastName.text.toString()
+
             userInfo["phone"] = edPhone.text.toString()
             var sex = 2
             when(spSex.selectedItemPosition){
@@ -60,7 +64,17 @@ class MainMyPageFragment : Fragment() {
             }
             userInfo["sex"]  = sex
             userInfo["birth_day"] = tvBirthday.text.toString()
-            usersRef.child(currentUser?.uid.toString()).updateChildren(userInfo)
+            userInfo["position"] = spPosition.selectedItem.toString()
+            usersRef.child(currentUser?.uid.toString()).updateChildren(userInfo).addOnCompleteListener {
+                if(it.isSuccessful){
+                    Toast.makeText(context,"Update Profile Successful..",Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(context,it.exception.toString(),Toast.LENGTH_SHORT).show()
+                }
+            }
+
+
         }
         tvBirthday.setOnClickListener {
             /* if(birthday!="null"){
@@ -107,13 +121,21 @@ class MainMyPageFragment : Fragment() {
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        spCreateAccountOption.setSelection(0)
+    }
     private fun setUpView() {
-        if(userModel?.name!= null){
-            etName.setText(userModel?.name)
+        if(userModel?.first_name!= null){
+            etFirstName.setText(userModel?.first_name)
         }
-        if(userModel?.email != null){
-            edMail.setText(userModel?.email)
+        if(userModel?.last_name!= null){
+            etLastName.setText(userModel?.last_name)
         }
+//        if(userModel?.nick_name!= null){
+//            etNickName.setText(userModel?.nick_name)
+//        }
         if(userModel?.birth_day != null){
             tvBirthday.text = userModel?.birth_day
         }
@@ -121,13 +143,49 @@ class MainMyPageFragment : Fragment() {
         if(userModel?.phone!=null){
             edPhone.setText(userModel?.phone)
         }
-        if(userModel?.postion!=null){
-            tvInternPosition.text = userModel?.postion
-        }
         if(context!= null){
             val spinnerLeft = arrayOf("Nam","Nữ","Khác")
             val arrayAdapterLeft = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerLeft)
             spSex.adapter = arrayAdapterLeft
+            val spinnerCreateAccountOption = arrayOf("- Select One -","Admin","Intern")
+            val arrayAdapterCreateAccountOption = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerCreateAccountOption)
+            spCreateAccountOption.adapter = arrayAdapterCreateAccountOption
+            if(userModel?.postion != "admin"){
+                val spinnerPosition = arrayOf("BE (Node JS)",
+                    "BE (.NET)","BE (PHP)","BE (Python)","BE (RoR)","Unity","FE (HTML&CSS)",
+                    "FE (React)","FE (Angular)","FE (Vue)","Mobile (iOS)","Mobile (Android)","IT Director")
+                val arrayAdapterPosition = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerPosition)
+                spPosition.adapter = arrayAdapterPosition
+            }
+            else{
+                val spinnerPosition = arrayOf("admin")
+                val arrayAdapterPosition = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerPosition)
+                spPosition.adapter = arrayAdapterPosition
+            }
+
+
+        }
+
+        if(userModel?.postion!=null){
+            var internPostion = 2
+            when(userModel?.postion){
+                "BE (Node JS)" -> internPostion = 0
+                "BE (.NET)" -> internPostion = 1
+                "BE (PHP)" -> internPostion = 2
+                "BE (Python)" -> internPostion = 3
+                "BE (RoR)" -> internPostion = 4
+                "Unity" -> internPostion = 5
+                "FE (HTML&CSS)" -> internPostion = 6
+                "FE (React)" -> internPostion = 7
+                "FE (Angular)" -> internPostion = 8
+                "FE (Vue)" -> internPostion = 9
+                "Mobile (iOS)" -> internPostion = 10
+                "Mobile (Android)" -> internPostion = 11
+                "IT Director" -> internPostion = 12
+                else -> internPostion = 0
+            }
+            spPosition.setSelection(internPostion)
+
         }
         if(userModel?.sex!=null){
 
@@ -140,10 +198,32 @@ class MainMyPageFragment : Fragment() {
                 }
             }
             if(userModel?.postion == "admin"){
-                btCreateAccount.visibility = View.VISIBLE
-                btCreateAccount.onClickThrottled{
-                    val intent = Intent(context, CreateAccountActivity::class.java)
-                    startActivity(intent)
+//                btCreateAccount.visibility = View.VISIBLE
+//                btCreateAccount.onClickThrottled{
+//                    val intent = Intent(context, CreateAccountActivity::class.java)
+//                    startActivity(intent)
+//                }
+                spCreateAccountOption.visibility = View.VISIBLE
+                spCreateAccountOption.onItemSelectedListener = object :
+                    AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parentView: AdapterView<*>?,
+                        selectedItemView: View,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if(spCreateAccountOption.selectedItem.toString()=="Intern"){
+                            val intent = Intent(context, CreateAccountActivity::class.java)
+                            startActivity(intent)
+                        }
+                        if(spCreateAccountOption.selectedItem.toString()=="Admin"){
+                           Log.d("DUY","ADqwe")
+                        }
+                    }
+
+                    override fun onNothingSelected(parentView: AdapterView<*>?) {
+
+                    }
                 }
             }
         }
@@ -155,11 +235,13 @@ class MainMyPageFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val birthDay = dataSnapshot.child("birth_day").getValue(String::class.java)
                     val email = dataSnapshot.child("email").getValue(String::class.java)
-                    val name = dataSnapshot.child("name").getValue(String::class.java)
+                    val firstName = dataSnapshot.child("first_name").getValue(String::class.java)
+                    val lastName = dataSnapshot.child("last_name").getValue(String::class.java)
+                    val nickName    =  dataSnapshot.child("nick_name").getValue(String::class.java)
                     val phone = dataSnapshot.child("phone").getValue(String::class.java)
                     val position = dataSnapshot.child("position").getValue(String::class.java)
                     val sex = dataSnapshot.child("sex").getValue(Int::class.java)
-                    userModel = UserModel(birthDay,email,name,phone,position,sex)
+                    userModel = UserModel(firstName,lastName,nickName,birthDay,phone,position,sex)
                     setUpView()
             }
 

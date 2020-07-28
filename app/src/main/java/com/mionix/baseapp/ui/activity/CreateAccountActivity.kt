@@ -55,26 +55,34 @@ class CreateAccountActivity : BaseBackButtonActivity() {
         }
     }
     private fun createNewAccount() {
-        val email = etEmail!!.text.toString()
-        val password = edPassword!!.text.toString()
+        val email = etEmail.text.toString()
+        val firstName = edFirstName.text.toString()
+        val lastName = edLastName.text.toString()
+        val nickName = edNickName.text.toString()
+
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter email....", Toast.LENGTH_SHORT).show()
         }
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Please enter password....", Toast.LENGTH_SHORT).show()
-        }
+//        if (TextUtils.isEmpty(password)) {
+//            Toast.makeText(this, "Please enter password....", Toast.LENGTH_SHORT).show()
+//        }
         else{
             loadingBar?.show()
-            mAuth?.createUserWithEmailAndPassword(email,password)?.addOnCompleteListener{task ->
+            mAuth?.createUserWithEmailAndPassword(email,"gumi7393")?.addOnCompleteListener{task ->
                     if(task.isSuccessful){
                         val deviceToken = FirebaseInstanceId.getInstance().token
                         val currentUserID = mAuth!!.currentUser!!.uid
                         RootRef!!.child("Users").child(currentUserID).setValue("")
-
                         RootRef!!.child("Users").child(currentUserID).child("device_token")
                             .setValue(deviceToken)
-                        RootRef!!.child("Users").child(currentUserID).child("position")
-                            .setValue(edPosition.text.toString())
+                        RootRef!!.child("Users").child(currentUserID).child("first_name")
+                            .setValue(firstName)
+                        RootRef!!.child("Users").child(currentUserID).child("last_name")
+                            .setValue(lastName)
+                        RootRef!!.child("Users").child(currentUserID).child("nick_name")
+                            .setValue(nickName)
+//                        RootRef!!.child("Users").child(currentUserID).child("position")
+//                            .setValue(edPosition.text.toString())
                         onBackPressed()
                         Toast.makeText(this@CreateAccountActivity, "Account created Successfully...", Toast.LENGTH_SHORT).show()
                         loadingBar?.dismiss()

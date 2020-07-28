@@ -24,10 +24,37 @@
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:text="Họ và Tên :"/>
+                android:text="First Name :"/>
 
             <EditText
-                android:id="@+id/etName"
+                android:id="@+id/etFirstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textColor="@color/black"
+                android:maxLines="1"
+                android:lines="1"
+                android:singleLine="true"
+                android:textSize="14sp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_margin="1dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:paddingStart="15dp"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:text="Last Name :"/>
+
+            <EditText
+                android:id="@+id/etLastName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -53,7 +80,7 @@
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:text="Giới tính :"/>
+                android:text="Sex :"/>
             <Spinner
                 android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
                 android:id="@+id/spSex"
@@ -79,7 +106,7 @@
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:text="Ngày Sinh :"/>
+                android:text="Date of birth :"/>
             <TextView
                 android:id="@+id/tvBirthday"
                 android:layout_width="match_parent"
@@ -90,6 +117,66 @@
                 android:textSize="14sp"
                 tools:text="1995年01月01日生まれ"/>
         </LinearLayout>
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="1dp"-->
+<!--            android:background="@color/white"-->
+<!--            android:orientation="horizontal">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="120dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:baselineAligned="false"-->
+<!--                android:paddingStart="15dp"-->
+<!--                android:text="Email :"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textSize="14sp"-->
+<!--                android:textStyle="bold" />-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/edMail"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:inputType="textEmailAddress"-->
+<!--                android:maxLines="1"-->
+<!--                android:lines="1"-->
+<!--                android:singleLine="true"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textSize="14sp" />-->
+<!--        </LinearLayout>-->
+        <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:baselineAligned="false"
+                        android:paddingStart="15dp"
+                        android:text="New Password :"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/edNewPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:lines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+                </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,37 +190,7 @@
                 android:layout_margin="10dp"
                 android:baselineAligned="false"
                 android:paddingStart="15dp"
-                android:text="Email :"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/edMail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:lines="1"
-                android:singleLine="true"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:background="@color/white"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:baselineAligned="false"
-                android:paddingStart="15dp"
-                android:text="Số Điện thoại :"
+                android:text="Phone Number :"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -142,7 +199,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:lines="1"
                 android:singleLine="true"
@@ -164,17 +220,15 @@
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:text="Vị trí :"/>
-            <TextView
-                android:id="@+id/tvInternPosition"
+                android:text="Position :"/>
+            <Spinner
+                android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+                android:id="@+id/spPosition"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown"
                 android:layout_margin="10dp"
-                android:maxLines="1"
-                android:lines="1"
-                android:singleLine="true"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:gravity="start"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -182,19 +236,28 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:layout_height="wrap_content">
-        <Button
-            android:text="Create New Account"
-            android:visibility="gone"
-            android:id="@+id/btCreateAccount"
-            android:textStyle="bold"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:layout_marginBottom="12dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/button_border_bottom_layout"
+        <Spinner
+            android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+            android:id="@+id/spCreateAccountOption"
             android:layout_width="match_parent"
+            android:spinnerMode="dropdown"
+            android:visibility="gone"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:gravity="start"
             android:layout_height="wrap_content"/>
+<!--        <Button-->
+<!--            android:text="Create New Account"-->
+<!--            android:id="@+id/btCreateAccount"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:layout_marginBottom="12dp"-->
+<!--            android:layout_marginStart="12dp"-->
+<!--            android:layout_marginEnd="12dp"-->
+<!--            android:background="@drawable/button_border_bottom_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"/>-->
         <Button
             android:text="Update Profile"
             android:id="@+id/btChange"

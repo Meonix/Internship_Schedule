@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
-import com.archit.calendardaterangepicker.customviews.CalendarListener
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.mionix.baseapp.R
 import com.mionix.baseapp.ui.adapter.MainHomeViewPagerAdapter

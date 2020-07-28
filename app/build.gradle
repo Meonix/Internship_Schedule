@@ -73,9 +73,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:15.0.0'
     implementation 'com.google.firebase:firebase-core:15.0.0'
     implementation 'com.firebaseui:firebase-ui-database:3.2.2'
-
+    //Calendar Library
     implementation 'com.github.kizitonwose:CalendarView:0.4.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.9'
+
+    implementation 'com.karumi:dexter:5.0.0'
 }
 repositories {
     mavenCentral()
