@@ -4,7 +4,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.mionix.baseapp.ui.fragment.CurrentWorkingCalFragment
-import com.mionix.baseapp.ui.fragment.RegisterCalFragment
 
 class MainHomeViewPagerAdapter(
     private val listTitle: MutableList<String>,
@@ -13,7 +12,7 @@ class MainHomeViewPagerAdapter(
     override fun getItem(position: Int): Fragment {
         return when (listTitle[position]) {
             "Working Calendar" -> CurrentWorkingCalFragment.newInstance()
-            "Register Calendar" -> RegisterCalFragment.newInstance()
+            //"Register Calendar" -> RegisterCalFragment.newInstance()
            /* 5 -> UsefulInfoFragment.newInstance()*/
             else -> CurrentWorkingCalFragment.newInstance()
         }

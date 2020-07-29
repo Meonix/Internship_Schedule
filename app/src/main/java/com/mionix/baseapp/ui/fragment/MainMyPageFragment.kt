@@ -3,7 +3,6 @@ package com.mionix.baseapp.ui.fragment
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,19 +15,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mionix.baseapp.R
 import com.mionix.baseapp.model.DateModel
-import com.mionix.baseapp.model.UserModel
 import com.mionix.baseapp.ui.activity.CreateAccountActivity
 import com.mionix.baseapp.ui.custom.CustomCalendar
 import com.mionix.baseapp.utils.KeyboardUtils
 import com.mionix.baseapp.utils.onClickThrottled
-import kotlinx.android.synthetic.main.activity_create_account.*
 import kotlinx.android.synthetic.main.fragment_main_my_page.*
 import java.util.HashMap
 
 class MainMyPageFragment : Fragment() {
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
-    private var userModel: UserModel? = null
+//    private var userModel: UserModel? = null
     private var currentUser = mAuth.currentUser
     private var userInfo = HashMap<String, Any>()
     private var dateModelStart = DateModel()
@@ -88,8 +85,6 @@ class MainMyPageFragment : Fragment() {
                 mStartDateFrom = String.format("%02d",(dateModelStart.month+1)).plus("/")
                     .plus(String.format("%02d",dateModelStart.day)).plus("/")
                     .plus(dateModelStart.year.toString())
-
-
                 tvBirthday.text = mStartDateFrom
                 btChange.visibility = View.VISIBLE
                 llPickerDate.visibility = View.GONE
@@ -126,31 +121,40 @@ class MainMyPageFragment : Fragment() {
         super.onStart()
         spCreateAccountOption.setSelection(0)
     }
-    private fun setUpView() {
-        if(userModel?.first_name!= null){
-            etFirstName.setText(userModel?.first_name)
+    private fun setUpView(
+        birthDay: String?,
+        email: String?,
+        firstName: String?,
+        lastName: String?,
+        nickName: String?,
+        phone: String?,
+        position: String?,
+        sex: Int?
+    ) {
+        if(firstName!= null){
+            etFirstName.setText(firstName)
         }
-        if(userModel?.last_name!= null){
-            etLastName.setText(userModel?.last_name)
+        if(lastName!= null){
+            etLastName.setText(lastName)
         }
 //        if(userModel?.nick_name!= null){
 //            etNickName.setText(userModel?.nick_name)
 //        }
-        if(userModel?.birth_day != null){
-            tvBirthday.text = userModel?.birth_day
+        if(birthDay != null){
+            tvBirthday.text = birthDay
         }
 
-        if(userModel?.phone!=null){
-            edPhone.setText(userModel?.phone)
+        if(phone!=null){
+            edPhone.setText(phone)
         }
         if(context!= null){
-            val spinnerLeft = arrayOf("Nam","Nữ","Khác")
+            val spinnerLeft = arrayOf("Male","FeMale","Other")
             val arrayAdapterLeft = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerLeft)
             spSex.adapter = arrayAdapterLeft
             val spinnerCreateAccountOption = arrayOf("- Select One -","Admin","Intern")
             val arrayAdapterCreateAccountOption = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerCreateAccountOption)
             spCreateAccountOption.adapter = arrayAdapterCreateAccountOption
-            if(userModel?.postion != "admin"){
+            if(position != "admin"){
                 val spinnerPosition = arrayOf("BE (Node JS)",
                     "BE (.NET)","BE (PHP)","BE (Python)","BE (RoR)","Unity","FE (HTML&CSS)",
                     "FE (React)","FE (Angular)","FE (Vue)","Mobile (iOS)","Mobile (Android)","IT Director")
@@ -166,9 +170,9 @@ class MainMyPageFragment : Fragment() {
 
         }
 
-        if(userModel?.postion!=null){
+        if(position!=null){
             var internPostion = 2
-            when(userModel?.postion){
+            when(position){
                 "BE (Node JS)" -> internPostion = 0
                 "BE (.NET)" -> internPostion = 1
                 "BE (PHP)" -> internPostion = 2
@@ -187,9 +191,9 @@ class MainMyPageFragment : Fragment() {
             spPosition.setSelection(internPostion)
 
         }
-        if(userModel?.sex!=null){
+        if(sex!=null){
 
-            when(userModel?.sex){
+            when(sex){
                 1->spSex.setSelection(0)
                 2->spSex.setSelection(1)
                 3->spSex.setSelection(2)
@@ -197,7 +201,7 @@ class MainMyPageFragment : Fragment() {
                     spSex.setSelection(2)
                 }
             }
-            if(userModel?.postion == "admin"){
+            if(position == "admin"){
 //                btCreateAccount.visibility = View.VISIBLE
 //                btCreateAccount.onClickThrottled{
 //                    val intent = Intent(context, CreateAccountActivity::class.java)
@@ -217,7 +221,7 @@ class MainMyPageFragment : Fragment() {
                             startActivity(intent)
                         }
                         if(spCreateAccountOption.selectedItem.toString()=="Admin"){
-                           Log.d("DUY","ADqwe")
+//                           Log.d("DUY","ADqwe")
                         }
                     }
 
@@ -241,13 +245,14 @@ class MainMyPageFragment : Fragment() {
                     val phone = dataSnapshot.child("phone").getValue(String::class.java)
                     val position = dataSnapshot.child("position").getValue(String::class.java)
                     val sex = dataSnapshot.child("sex").getValue(Int::class.java)
-                    userModel = UserModel(firstName,lastName,nickName,birthDay,phone,position,sex)
-                    setUpView()
+                    setUpView(birthDay,email,firstName,lastName,nickName,phone,position,sex)
             }
 
-            override fun onCancelled(databaseError: DatabaseError?) {}
+            override fun onCancelled(databaseError: DatabaseError?) {
+
+            }
         }
-        usersRef.child(currentUser?.uid.toString()).addListenerForSingleValueEvent(eventListener)
+        usersRef.child(currentUser?.uid.toString()).addValueEventListener(eventListener)
 
     }
     override fun onCreateView(

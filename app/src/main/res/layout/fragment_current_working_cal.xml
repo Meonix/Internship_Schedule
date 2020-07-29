@@ -4,53 +4,192 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:clickable="true"
-    android:focusable="true"
-    android:background="#bdc3c7"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragment.CurrentWorkingCalFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/exOneAppBarLayout"
+    <LinearLayout
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/example_1_bg_light"
-        android:theme="@style/AppTheme.AppBarOverlay">
-        <include
-            android:id="@+id/legendLayout"
-            layout="@layout/calendar_day_legend"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <FrameLayout
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:layout_height="wrap_content">
+        <Button
+            android:text="January"
+            android:id="@+id/btJanuary"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="February"
+            android:id="@+id/btFebruary"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="March"
+            android:id="@+id/btMarch"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="April"
+            android:id="@+id/btApril"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="May"
+            android:id="@+id/btMay"
+            android:layout_weight="1"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:layout_height="wrap_content">
+        <Button
+            android:text="June"
+            android:id="@+id/btJune"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="July"
+            android:id="@+id/btJuly"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="August"
+            android:id="@+id/btAugust"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="September"
+            android:id="@+id/btSeptember"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="October"
+            android:id="@+id/btOctober"
+            android:layout_weight="1"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:layout_height="wrap_content">
+        <Button
+            android:text="November"
+            android:id="@+id/btNovember"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+        <Button
+            android:text="December	"
+            android:id="@+id/btDecember"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="30dp"/>
+    </LinearLayout>
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.kizitonwose.calendarview.CalendarView
-            android:id="@+id/calendarView"
+        <Button
+            android:text="Register Time Working"
+            android:id="@+id/btRegisterTimeWorking"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginBottom="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            custom:cv_dayViewResource="@layout/example_1_calendar_day"
-            custom:cv_orientation="horizontal"
-            custom:cv_outDateStyle="endOfRow"
-            custom:cv_inDateStyle="allMonths"
-            custom:cv_scrollMode="paged" />
-
-        <CheckBox
-            android:id="@+id/weekModeCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:buttonTint="@color/example_1_white"
-            android:padding="2dp"
-            android:text="Week mode"
-            android:textColor="@color/example_1_white"
-            android:textSize="18sp"
-            android:layout_gravity="bottom|center_horizontal" />
-
-    </FrameLayout>
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
 </LinearLayout>

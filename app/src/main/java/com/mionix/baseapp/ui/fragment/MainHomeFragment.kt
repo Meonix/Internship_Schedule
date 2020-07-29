@@ -42,7 +42,7 @@ class MainHomeFragment : Fragment() {
     private fun setupView() {
         fragmentNames.addAll(
             mutableListOf(
-                "Working Calendar", "Register Calendar"
+                "Working Calendar"//, "Register Calendar"
             )
         )
         setupViewPager()
