@@ -40,7 +40,9 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
     private var currentUser = mAuth.currentUser
     private var workingRef = FirebaseDatabase.getInstance().reference.child("Users").child(currentUser?.uid.toString()).child("working_time")
     private var fullTimeDateList = mutableSetOf<LocalDate>()
-    private val selectedDates = mutableSetOf<LocalDate>()
+    private var morningTimeDateList = mutableSetOf<LocalDate>()
+    private var afternoonTimeDateList = mutableSetOf<LocalDate>()
+
     private val today = LocalDate.now()
     private var intMonth = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +58,7 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
     }
 
     override fun setTitleToolbar(): String {
-        return "Current Working Calendar"
+        return "Working Schedule in "
     }
 
     private fun setUpView() {
@@ -71,8 +73,9 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
             }
         }
         //itnit date of Month
-        var calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance()
         val currentMonth = YearMonth.of(calendar.get(Calendar.YEAR),intMonth)
+        this.setTitleToolbar("Working Schedule in ${currentMonth.month}")
         val firstMonth = currentMonth.minusMonths(0)
         val lastMonth = currentMonth.plusMonths(0)
         val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
@@ -82,22 +85,34 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
         val eventListener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val dataFullTime = dataSnapshot.child("full_time").getValue(String::class.java)
+                val dataMorningTime = dataSnapshot.child("morning_time").getValue(String::class.java)
+                val dataAfternoonTime = dataSnapshot.child("afternoon_time").getValue(String::class.java)
                 if(dataFullTime!=null){
                     val arrayData = dataFullTime.split(",")
                     for (x in 1 until arrayData.size){
                         fullTimeDateList.add(LocalDate.of(calendar.get(Calendar.YEAR),intMonth, arrayData[x].toInt()))
                     }
                 }
-
-
+                if(dataMorningTime!=null){
+                    val arrayData = dataMorningTime.split(",")
+                    for (x in 1 until arrayData.size){
+                        morningTimeDateList.add(LocalDate.of(calendar.get(Calendar.YEAR),intMonth, arrayData[x].toInt()))
+                    }
+                }
+                if(dataAfternoonTime!=null){
+                    val arrayData = dataAfternoonTime.split(",")
+                    for (x in 1 until arrayData.size){
+                        afternoonTimeDateList.add(LocalDate.of(calendar.get(Calendar.YEAR),intMonth, arrayData[x].toInt()))
+                    }
+                }
                 class DayViewContainer(view: View) : ViewContainer(view) {
                     // Will be set when this container is bound. See the dayBinder.
                     lateinit var day: CalendarDay
                     val textView = view.findViewById<TextView>(R.id.exOneDayText)
                     init {
-                        if(dataFullTime!=null){
-                            selectedDates.addAll(fullTimeDateList)
-                        }
+//                        if(dataFullTime!=null){
+//                            selectedDates.addAll(fullTimeDateList)
+//                        }
 //                        view.setOnClickListener {
 //                            if (day.owner == DayOwner.THIS_MONTH) {
 //                                if (selectedDates.contains(day.date)) {
@@ -127,9 +142,17 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
 
                         if (day.owner == DayOwner.THIS_MONTH) {
                             when {
-                                selectedDates.contains(day.date) -> {
+                                fullTimeDateList.contains(day.date) -> {
                                     textView.setTextColorRes(R.color.example_1_bg)
                                     textView.setBackgroundResource(R.drawable.fullday_selected)
+                                }
+                                morningTimeDateList.contains(day.date) ->{
+                                    textView.setTextColorRes(R.color.example_1_bg)
+                                    textView.setBackgroundResource(R.drawable.example_1_selected_bg)
+                                }
+                                afternoonTimeDateList.contains(day.date) ->{
+                                    textView.setTextColorRes(R.color.example_1_bg)
+                                    textView.setBackgroundResource(R.drawable.affternoon_selected)
                                 }
                                 today == day.date -> {
                                     textView.setTextColorRes(R.color.example_1_white)
@@ -206,7 +229,9 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
                 if (monthToWeek) {
                     // We want the first visible day to remain
                     // visible when we change to week mode.
-                    calendarView.scrollToDate(today)
+                    if(today.monthValue==intMonth){
+                        calendarView.scrollToDate(today)
+                    }
                 } else {
                     // When changing to month mode, we choose current
                     // month if it is the only one in the current frame.

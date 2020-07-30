@@ -7,7 +7,19 @@ import com.securepreferences.SecurePreferences
 class Preferences(private val securePreferences: SecurePreferences) {
     companion object {
         const val APPEAL_POINT_KEY = "appeal_point_key"
+        const val EMAIL ="email"
+        const val PASSWORD = "password"
     }
+    fun setLocalEmail(pass: String?) {
+        securePreferences.edit().putString(EMAIL, pass).apply()
+    }
+
+    fun getLocalEmail() = securePreferences.getString(EMAIL, null)
+    fun setLocalPassword(pass: String?) {
+        securePreferences.edit().putString(PASSWORD, pass).apply()
+    }
+
+    fun getLocalPassword() = securePreferences.getString(PASSWORD, null)
 //    fun setListAppealkey(appelkey: MutableList<AppealKey>){
 //        val gson = Gson()
 //        val json = gson.toJson(appelkey)

@@ -16,14 +16,17 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.mionix.baseapp.MainActivity
 import com.mionix.baseapp.R
 import com.mionix.baseapp.model.UserModel
+import com.mionix.baseapp.model.local.Preferences
 import com.mionix.baseapp.utils.KeyboardUtils.hideSoftKeyboard
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.fragment_main_my_page.*
+import org.koin.android.ext.android.inject
 
 class LoginActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
     private lateinit var loadingBar: ProgressDialog
+    private val mPreferences by inject<Preferences>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -38,6 +41,8 @@ class LoginActivity : AppCompatActivity() {
     private fun allowUserToLogin() {
         val email = loginEmail.text.toString()
         val password = loginPassword.text.toString()
+        mPreferences.setLocalPassword(password)
+        mPreferences.setLocalEmail(email)
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter email....", Toast.LENGTH_SHORT).show()
         }

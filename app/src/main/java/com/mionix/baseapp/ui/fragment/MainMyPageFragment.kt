@@ -1,6 +1,7 @@
 package com.mionix.baseapp.ui.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,15 +12,19 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mionix.baseapp.R
 import com.mionix.baseapp.model.DateModel
+import com.mionix.baseapp.model.local.Preferences
 import com.mionix.baseapp.ui.activity.CreateAccountActivity
 import com.mionix.baseapp.ui.custom.CustomCalendar
+import com.mionix.baseapp.utils.AppExecutors
 import com.mionix.baseapp.utils.KeyboardUtils
 import com.mionix.baseapp.utils.onClickThrottled
 import kotlinx.android.synthetic.main.fragment_main_my_page.*
+import org.koin.android.ext.android.inject
 import java.util.HashMap
 
 class MainMyPageFragment : Fragment() {
@@ -31,6 +36,7 @@ class MainMyPageFragment : Fragment() {
     private var dateModelStart = DateModel()
     private var dateModelEnd = DateModel()
     private var mStartDateFrom = ""
+    private val mPreferences by inject<Preferences>()
     private val mCustomCalendar = CustomCalendar()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +53,8 @@ class MainMyPageFragment : Fragment() {
     private fun setupEventClick() {
         btChange.onClickThrottled {
             if(edNewPassword.text.toString() != ""){
-                mAuth.currentUser?.updatePassword(edNewPassword.text.toString().trim())
+                mAuth.currentUser?.updatePassword(edNewPassword.text.toString())
+                mPreferences.setLocalPassword(edNewPassword.text.toString())
             }
             userInfo["first_name"]= etFirstName.text.toString()
             userInfo["last_name"]= etLastName.text.toString()
@@ -61,7 +68,9 @@ class MainMyPageFragment : Fragment() {
             }
             userInfo["sex"]  = sex
             userInfo["birth_day"] = tvBirthday.text.toString()
-            userInfo["position"] = spPosition.selectedItem.toString()
+            if(llPositionMyFragment.isVisible){
+                userInfo["position"] = spPosition.selectedItem.toString()
+            }
             usersRef.child(currentUser?.uid.toString()).updateChildren(userInfo).addOnCompleteListener {
                 if(it.isSuccessful){
                     Toast.makeText(context,"Update Profile Successful..",Toast.LENGTH_SHORT).show()
@@ -119,7 +128,7 @@ class MainMyPageFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        spCreateAccountOption.setSelection(0)
+
     }
     private fun setUpView(
         birthDay: String?,
@@ -151,10 +160,7 @@ class MainMyPageFragment : Fragment() {
             val spinnerLeft = arrayOf("Male","FeMale","Other")
             val arrayAdapterLeft = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerLeft)
             spSex.adapter = arrayAdapterLeft
-            val spinnerCreateAccountOption = arrayOf("- Select One -","Admin","Intern")
-            val arrayAdapterCreateAccountOption = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerCreateAccountOption)
-            spCreateAccountOption.adapter = arrayAdapterCreateAccountOption
-            if(position != "admin"){
+            if(position != "admin" && position != "system_admin"){
                 val spinnerPosition = arrayOf("BE (Node JS)",
                     "BE (.NET)","BE (PHP)","BE (Python)","BE (RoR)","Unity","FE (HTML&CSS)",
                     "FE (React)","FE (Angular)","FE (Vue)","Mobile (iOS)","Mobile (Android)","IT Director")
@@ -162,9 +168,7 @@ class MainMyPageFragment : Fragment() {
                 spPosition.adapter = arrayAdapterPosition
             }
             else{
-                val spinnerPosition = arrayOf("admin")
-                val arrayAdapterPosition = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerPosition)
-                spPosition.adapter = arrayAdapterPosition
+                llPositionMyFragment.visibility = View.GONE
             }
 
 
@@ -201,35 +205,6 @@ class MainMyPageFragment : Fragment() {
                     spSex.setSelection(2)
                 }
             }
-            if(position == "admin"){
-//                btCreateAccount.visibility = View.VISIBLE
-//                btCreateAccount.onClickThrottled{
-//                    val intent = Intent(context, CreateAccountActivity::class.java)
-//                    startActivity(intent)
-//                }
-                spCreateAccountOption.visibility = View.VISIBLE
-                spCreateAccountOption.onItemSelectedListener = object :
-                    AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parentView: AdapterView<*>?,
-                        selectedItemView: View,
-                        position: Int,
-                        id: Long
-                    ) {
-                        if(spCreateAccountOption.selectedItem.toString()=="Intern"){
-                            val intent = Intent(context, CreateAccountActivity::class.java)
-                            startActivity(intent)
-                        }
-                        if(spCreateAccountOption.selectedItem.toString()=="Admin"){
-//                           Log.d("DUY","ADqwe")
-                        }
-                    }
-
-                    override fun onNothingSelected(parentView: AdapterView<*>?) {
-
-                    }
-                }
-            }
         }
 
     }
@@ -255,6 +230,8 @@ class MainMyPageFragment : Fragment() {
         usersRef.child(currentUser?.uid.toString()).addValueEventListener(eventListener)
 
     }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

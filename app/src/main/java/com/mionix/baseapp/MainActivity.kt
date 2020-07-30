@@ -3,8 +3,11 @@ package com.mionix.baseapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -13,6 +16,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.mionix.baseapp.ui.activity.LoginActivity
 import com.mionix.baseapp.ui.activity.SettingActivity
+import com.mionix.baseapp.ui.fragment.AdminMangeFragment
 import com.mionix.baseapp.ui.fragment.MainHomeFragment
 import com.mionix.baseapp.ui.fragment.MainMyPageFragment
 import com.mionix.baseapp.utils.onClickThrottled
@@ -23,12 +27,13 @@ import kotlinx.android.synthetic.main.layout_toolbar_view.view.*
 
 class MainActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private var RootRef: DatabaseReference = FirebaseDatabase.getInstance().reference
     private var currentUser: FirebaseUser? = null
+    private var usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
 
 
     lateinit var homeFragment: MainHomeFragment
     lateinit var mypageFragment: MainMyPageFragment
+    lateinit var adminManageFragment: AdminMangeFragment
     lateinit var currentFragment: Fragment
     lateinit var fragmentManager: FragmentManager
 //    private val mPreferences by inject<Preferences>()
@@ -50,6 +55,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigationBar() {
+        val eventListener: ValueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val position = dataSnapshot.child("position").getValue(String::class.java)
+                navigation.menu[1].isVisible = position == "system_admin"||position== "admin"
+            }
+
+            override fun onCancelled(databaseError: DatabaseError?) {
+
+            }
+        }
+        usersRef.child(currentUser?.uid.toString()).addValueEventListener(eventListener)
         navigation.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
@@ -65,6 +81,11 @@ class MainActivity : AppCompatActivity() {
                     currentFragment = mypageFragment
                     return@OnNavigationItemSelectedListener true
                 }
+                R.id.navigation_management -> {
+                    fragmentManager.beginTransaction().hide(currentFragment).show(adminManageFragment).commit()
+                    currentFragment = adminManageFragment
+                    return@OnNavigationItemSelectedListener true
+                }
             }
             false
         })
@@ -75,11 +96,14 @@ class MainActivity : AppCompatActivity() {
 
         homeFragment = MainHomeFragment.newInstance()
         mypageFragment = MainMyPageFragment.newInstance()
+        adminManageFragment = AdminMangeFragment.newInstance()
 
         currentFragment = homeFragment
 
         fragmentManager.beginTransaction().add(R.id.contentContainer, mypageFragment, "mypageFragment").commit()
         fragmentManager.beginTransaction().hide(mypageFragment).commit()
+        fragmentManager.beginTransaction().add(R.id.contentContainer, adminManageFragment, "adminManageFragment").commit()
+        fragmentManager.beginTransaction().hide(adminManageFragment).commit()
         fragmentManager.beginTransaction().add(R.id.contentContainer, homeFragment, "homeFragment").commit()
     }
 

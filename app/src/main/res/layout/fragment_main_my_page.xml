@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:id="@+id/rlFragmentMyPage"
+    android:background="@color/white"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.MainMyPageFragment">
     <LinearLayout
@@ -210,6 +211,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:layout_margin="1dp"
+            android:id="@+id/llPositionMyFragment"
             android:orientation="horizontal">
             <TextView
                 android:layout_width="120dp"
@@ -236,16 +238,7 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:layout_height="wrap_content">
-        <Spinner
-            android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
-            android:id="@+id/spCreateAccountOption"
-            android:layout_width="match_parent"
-            android:spinnerMode="dropdown"
-            android:visibility="gone"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_border_bottom_layout"
-            android:gravity="start"
-            android:layout_height="wrap_content"/>
+
 <!--        <Button-->
 <!--            android:text="Create New Account"-->
 <!--            android:id="@+id/btCreateAccount"-->

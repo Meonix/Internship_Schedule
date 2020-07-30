@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -65,7 +66,15 @@ class RegisterTimeWorkingActivity : BaseBackButtonActivity() {
             val calendarDay =  Calendar.getInstance()
             workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("full_time").setValue(fullTime)
             workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("afternoon_time").setValue(afternoonTime)
-            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("morning_time").setValue(morningTime)
+            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("morning_time").setValue(morningTime).addOnCompleteListener {
+                if(it.isSuccessful){
+                    Toast.makeText(this@RegisterTimeWorkingActivity,"Register Successful..",Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(this@RegisterTimeWorkingActivity,it.exception?.message,Toast.LENGTH_SHORT).show()
+                }
+            }
+            onBackPressed()
         }
     }
     private class DataWorkingDay(var type:Int,var date: LocalDate)
