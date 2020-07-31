@@ -39,9 +39,6 @@ class CreateAccountActivity : BaseBackButtonActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
-        Log.d("DUY",mPreferences.getLocalPassword().toString())
-
-        Log.d("DUY",currentUser?.email)
         setupView()
         setUpActionKeyBoard(rlCreateAccount)
         btCreateAccount.onClickThrottled { createNewAccount() }
@@ -88,10 +85,11 @@ class CreateAccountActivity : BaseBackButtonActivity() {
 //        if (TextUtils.isEmpty(password)) {
 //            Toast.makeText(this, "Please enter password....", Toast.LENGTH_SHORT).show()
 //        }
-        else{
+        else {
             loadingBar?.show()
-            mAuth?.createUserWithEmailAndPassword(email,"gumi7393")?.addOnCompleteListener{task ->
-                    if(task.isSuccessful){
+            mAuth?.createUserWithEmailAndPassword(email, "gumi7393")
+                ?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
                         val deviceToken = FirebaseInstanceId.getInstance().token
                         val currentUserID = mAuth!!.currentUser!!.uid
                         RootRef!!.child("Users").child(currentUserID).setValue("")
@@ -106,67 +104,86 @@ class CreateAccountActivity : BaseBackButtonActivity() {
 //                        RootRef!!.child("Users").child(currentUserID).child("position")
 //                            .setValue(edPosition.text.toString())
                         onBackPressed()
-                        Toast.makeText(this@CreateAccountActivity, "Account created Successfully...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@CreateAccountActivity,
+                            "Account created Successfully...",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         loadingBar?.dismiss()
                         sendEmail()
-                    }
-                else
-                    {
+                    } else {
                         val message = task.exception!!.toString()
-                        Toast.makeText(this@CreateAccountActivity, "Error :$message", Toast.LENGTH_SHORT).show()
-                        loadingBar?.dismiss()
+                        Toast.makeText(
+                            this@CreateAccountActivity,
+                            "Error :$message",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    }
+                    if (mPreferences.getLocalEmail() != null) {
+                        if (mPreferences.getLocalPassword() != null) {
+                            mAuth?.signInWithEmailAndPassword(
+                                mPreferences.getLocalEmail()!!,
+                                mPreferences.getLocalPassword()!!
+                            )
+                        }
                     }
 
-            }
-        }
-    }
-    private fun sendEmail(){
-        appExecutors.diskIO().execute {
-            val props = System.getProperties()
-            props["mail.smtp.host"] = "smtp.gmail.com"
-            props["mail.smtp.socketFactory.port"] = "465"
-            props["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
-            props["mail.smtp.auth"] = "true"
-            props["mail.smtp.port"] = "465"
-
-            val session =  Session.getInstance(props,
-                object : javax.mail.Authenticator() {
-                    //Authenticating the password
-                    override fun getPasswordAuthentication(): PasswordAuthentication {
-                        return PasswordAuthentication(
-                            mPreferences.getLocalEmail(),mPreferences.getLocalPassword())
-                    }
-                })
-
-            try {
-                //Creating MimeMessage object
-                val mm = MimeMessage(session)
-                val emailId = etEmail.text.toString().trim()
-                //Setting sender address
-                mm.setFrom(InternetAddress(mPreferences.getLocalEmail()))
-                //Adding receiver
-                mm.addRecipient(
-                    Message.RecipientType.TO,
-                    InternetAddress(emailId)
-                )
-                //Adding subject
-                mm.subject = "Welcome to Gumi Company"
-                //Adding message
-                mm.setText("your account is :${etEmail.text.toString().trim()} and password defaut is: gumi7393")
-
-                //Sending email
-                Transport.send(mm)
-
-                appExecutors.mainThread().execute {
-                    //Something that should be executed on main thread.
                 }
-
-            } catch (e: MessagingException) {
-                e.printStackTrace()
-            }
         }
     }
-    override fun setTitleToolbar(): String {
-        return "Create Account"
-    }
+        private fun sendEmail() {
+            appExecutors.diskIO().execute {
+                val props = System.getProperties()
+                props["mail.smtp.host"] = "smtp.gmail.com"
+                props["mail.smtp.socketFactory.port"] = "465"
+                props["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
+                props["mail.smtp.auth"] = "true"
+                props["mail.smtp.port"] = "465"
+
+                val session = Session.getInstance(props,
+                    object : javax.mail.Authenticator() {
+                        //Authenticating the password
+                        override fun getPasswordAuthentication(): PasswordAuthentication {
+                            return PasswordAuthentication(
+                                mPreferences.getLocalEmail(), mPreferences.getLocalPassword()
+                            )
+                        }
+                    })
+
+                try {
+                    //Creating MimeMessage object
+                    val mm = MimeMessage(session)
+                    val emailId = etEmail.text.toString().trim()
+                    //Setting sender address
+                    mm.setFrom(InternetAddress(mPreferences.getLocalEmail()))
+                    //Adding receiver
+                    mm.addRecipient(
+                        Message.RecipientType.TO,
+                        InternetAddress(emailId)
+                    )
+                    //Adding subject
+                    mm.subject = "Welcome to Gumi Company"
+                    //Adding message
+                    mm.setText(
+                        "your account is :${etEmail.text.toString()
+                            .trim()} and password defaut is: gumi7393"
+                    )
+
+                    //Sending email
+                    Transport.send(mm)
+
+                    appExecutors.mainThread().execute {
+                        //Something that should be executed on main thread.
+                    }
+
+                } catch (e: MessagingException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        override fun setTitleToolbar(): String {
+            return "Create Account"
+        }
 }
