@@ -7,5 +7,6 @@ class UserModel (
     var birth_day:String? = null,
     var phone : String? = null,
     var postion: String ? =null,
-    var sex : Int ? = null
+    var sex : Int ? = null,
+    var uid : String? = null
 )

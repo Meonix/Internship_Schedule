@@ -3,17 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@color/white"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.AdminMangeFragment">
 
+    <TextView
+        android:text="Create New Account(Please choose select one)"
+        android:layout_width="wrap_content"
+        android:textSize="14sp"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"/>
     <Spinner
         android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
         android:id="@+id/spCreateAccountOption"
         android:layout_width="match_parent"
         android:spinnerMode="dropdown"
-        android:layout_margin="10dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
         android:background="@drawable/button_border_bottom_layout"
         android:gravity="start"
         android:layout_height="wrap_content"/>
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/rvListUserFragmentAdminMange"
+        android:layout_height="match_parent"/>
 </LinearLayout>

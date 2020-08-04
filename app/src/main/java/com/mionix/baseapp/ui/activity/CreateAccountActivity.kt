@@ -101,6 +101,8 @@ class CreateAccountActivity : BaseBackButtonActivity() {
                             .setValue(lastName)
                         RootRef!!.child("Users").child(currentUserID).child("nick_name")
                             .setValue(nickName)
+                        RootRef!!.child("Users").child(currentUserID).child("uid")
+                            .setValue(currentUserID)
 //                        RootRef!!.child("Users").child(currentUserID).child("position")
 //                            .setValue(edPosition.text.toString())
                         onBackPressed()

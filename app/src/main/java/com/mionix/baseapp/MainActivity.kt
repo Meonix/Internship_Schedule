@@ -26,9 +26,9 @@ import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import kotlinx.android.synthetic.main.layout_toolbar_view.view.*
 
 class MainActivity : AppCompatActivity() {
-    private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private var currentUser: FirebaseUser? = null
-    private var usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
+    private var mAuth = FirebaseAuth.getInstance()
+    private var currentUser = mAuth.currentUser
+    private var usersRef = FirebaseDatabase.getInstance().reference.child("Users")
 
 
     lateinit var homeFragment: MainHomeFragment
@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        currentUser = mAuth.currentUser
         setupView()
         setupFragments()
         setupBottomNavigationBar()
@@ -96,14 +95,29 @@ class MainActivity : AppCompatActivity() {
 
         homeFragment = MainHomeFragment.newInstance()
         mypageFragment = MainMyPageFragment.newInstance()
-        adminManageFragment = AdminMangeFragment.newInstance()
+
+
+        val eventListener: ValueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val position = dataSnapshot.child("position").getValue(String::class.java)
+                if(position == "system_admin" || position == "admin"){
+                    adminManageFragment = AdminMangeFragment.newInstance()
+                    fragmentManager.beginTransaction().add(R.id.contentContainer, adminManageFragment, "adminManageFragment").commit()
+                    fragmentManager.beginTransaction().hide(adminManageFragment).commit()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError?) {
+
+            }
+        }
+        usersRef.child(currentUser?.uid.toString()).addValueEventListener(eventListener)
 
         currentFragment = homeFragment
 
         fragmentManager.beginTransaction().add(R.id.contentContainer, mypageFragment, "mypageFragment").commit()
         fragmentManager.beginTransaction().hide(mypageFragment).commit()
-        fragmentManager.beginTransaction().add(R.id.contentContainer, adminManageFragment, "adminManageFragment").commit()
-        fragmentManager.beginTransaction().hide(adminManageFragment).commit()
+
         fragmentManager.beginTransaction().add(R.id.contentContainer, homeFragment, "homeFragment").commit()
     }
 

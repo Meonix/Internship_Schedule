@@ -35,16 +35,16 @@ import java.util.*
 class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
     companion object {
         const val KEY_MOTH = "key_moth"
+        const val KEY_UID = "uid"
     }
-    private var mAuth = FirebaseAuth.getInstance()
-    private var currentUser = mAuth.currentUser
-    private var workingRef = FirebaseDatabase.getInstance().reference.child("Users").child(currentUser?.uid.toString()).child("working_time")
+    private var userRef = FirebaseDatabase.getInstance().reference.child("Users")
     private var fullTimeDateList = mutableSetOf<LocalDate>()
     private var morningTimeDateList = mutableSetOf<LocalDate>()
     private var afternoonTimeDateList = mutableSetOf<LocalDate>()
 
     private val today = LocalDate.now()
     private var intMonth = 0
+    private var uid = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_current_working_cal_moth_view)
@@ -63,6 +63,10 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
 
     private fun setUpView() {
         intMonth = intent.getIntExtra(KEY_MOTH,0)
+        intent.getStringExtra(KEY_UID)?.let {
+            uid = it
+        }
+        val workingRef = userRef.child(uid).child("working_time")
         calendarView.dayBinder = object : DayBinder<DayViewContainer> {
             // Called only when a new container is needed.
             override fun create(view: View) = DayViewContainer(view)
