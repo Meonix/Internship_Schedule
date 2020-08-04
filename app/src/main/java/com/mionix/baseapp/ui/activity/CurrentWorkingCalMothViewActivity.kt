@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.view.updateLayoutParams
@@ -26,7 +28,11 @@ import com.mionix.baseapp.R
 import com.mionix.baseapp.ui.base.BaseBackButtonActivity
 import com.mionix.baseapp.ui.custom.setTextColorRes
 import com.mionix.baseapp.ui.fragment.CurrentWorkingCalFragment
+import com.mionix.baseapp.utils.onClickThrottled
 import kotlinx.android.synthetic.main.activity_current_working_cal_moth_view.*
+import kotlinx.android.synthetic.main.activity_current_working_cal_moth_view.calendarView
+import kotlinx.android.synthetic.main.activity_current_working_cal_moth_view.spTypeOfTime
+import kotlinx.android.synthetic.main.activity_register_time_working.*
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.WeekFields
@@ -41,6 +47,8 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
     private var fullTimeDateList = mutableSetOf<LocalDate>()
     private var morningTimeDateList = mutableSetOf<LocalDate>()
     private var afternoonTimeDateList = mutableSetOf<LocalDate>()
+    private var selectedDates = mutableListOf<LocalDate>()
+    private var listDateData = mutableListOf<DataWorkingDay>()
 
     private val today = LocalDate.now()
     private var intMonth = 0
@@ -50,6 +58,43 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
         setContentView(R.layout.activity_current_working_cal_moth_view)
         setUpData()
         setUpView()
+        handleOnclick()
+    }
+
+    private fun handleOnclick() {
+        btUpdateTimeWorking.onClickThrottled {
+            var fullTime = ""
+            var morningTime =""
+            var afternoonTime = ""
+            val workingRef = userRef.child(uid).child("working_time")
+            listDateData.forEach {
+//                Log.d("DUY",it.date.dayOfMonth.toString())
+//                Log.d("DUY",it.type.toString())
+                when(it.type){
+                    1 -> {
+                        fullTime += "," + it.date.dayOfMonth.toString()
+                    }
+                    2-> {
+                        morningTime += "," + it.date.dayOfMonth.toString()
+                    }
+                    3-> {
+                        afternoonTime += "," + it.date.dayOfMonth.toString()
+                    }
+                }
+            }
+            val calendarDay =  Calendar.getInstance()
+            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("full_time").setValue(fullTime)
+            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("afternoon_time").setValue(afternoonTime)
+            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("morning_time").setValue(morningTime).addOnCompleteListener {
+                if(it.isSuccessful){
+                    Toast.makeText(this@CurrentWorkingCalMothViewActivity,"Update Successful..", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(this@CurrentWorkingCalMothViewActivity,it.exception?.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+            onBackPressed()
+        }
     }
 
     private fun setUpData() {
@@ -114,19 +159,24 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
                     lateinit var day: CalendarDay
                     val textView = view.findViewById<TextView>(R.id.exOneDayText)
                     init {
-//                        if(dataFullTime!=null){
-//                            selectedDates.addAll(fullTimeDateList)
-//                        }
-//                        view.setOnClickListener {
-//                            if (day.owner == DayOwner.THIS_MONTH) {
-//                                if (selectedDates.contains(day.date)) {
-//                                    selectedDates.remove(day.date)
-//                                } else {
-//                                    selectedDates.add(day.date)
-//                                }
-//                                calendarView.notifyDayChanged(day)
-//                            }
-//                        }
+                        view.setOnClickListener {
+                            if (day.owner == DayOwner.THIS_MONTH) {
+                                if (selectedDates.contains(day.date)||
+                                    fullTimeDateList.contains(day.date)||
+                                    morningTimeDateList.contains(day.date)||
+                                    afternoonTimeDateList.contains(day.date)) {
+
+                                    listDateData.removeIf { it.date == day.date}
+                                    fullTimeDateList.remove(day.date)
+                                    morningTimeDateList.remove(day.date)
+                                    afternoonTimeDateList.remove(day.date)
+                                    selectedDates.remove(day.date)
+                                } else {
+                                    selectedDates.add(day.date)
+                                }
+                                calendarView.notifyDayChanged(day)
+                            }
+                        }
                     }
                 }
                 //Using class DayViewContainer to handle event pick on calendar
@@ -146,15 +196,49 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
 
                         if (day.owner == DayOwner.THIS_MONTH) {
                             when {
+                                selectedDates.contains(day.date) -> {
+                                    when (spTypeOfTime.selectedItemPosition) {
+                                        0 -> {
+                                            listDateData.add(
+                                                DataWorkingDay(1, day.date)
+                                            )
+                                            textView.setTextColorRes(R.color.example_1_bg)
+                                            textView.setBackgroundResource(R.drawable.fullday_selected)
+                                        }
+                                        1 -> {
+                                            listDateData.add(
+                                                DataWorkingDay(2, day.date)
+                                            )
+                                            textView.setTextColorRes(R.color.example_1_bg)
+                                            textView.setBackgroundResource(R.drawable.example_1_selected_bg)
+                                        }
+                                        else -> {
+                                            listDateData.add(
+                                                DataWorkingDay(3, day.date)
+                                            )
+                                            textView.setTextColorRes(R.color.example_1_bg)
+                                            textView.setBackgroundResource(R.drawable.affternoon_selected)
+                                        }
+                                    }
+                                }
                                 fullTimeDateList.contains(day.date) -> {
+                                    listDateData.add(
+                                        DataWorkingDay(1, day.date)
+                                    )
                                     textView.setTextColorRes(R.color.example_1_bg)
                                     textView.setBackgroundResource(R.drawable.fullday_selected)
                                 }
                                 morningTimeDateList.contains(day.date) ->{
+                                    listDateData.add(
+                                        DataWorkingDay(2, day.date)
+                                    )
                                     textView.setTextColorRes(R.color.example_1_bg)
                                     textView.setBackgroundResource(R.drawable.example_1_selected_bg)
                                 }
                                 afternoonTimeDateList.contains(day.date) ->{
+                                    listDateData.add(
+                                        DataWorkingDay(1, day.date)
+                                    )
                                     textView.setTextColorRes(R.color.example_1_bg)
                                     textView.setBackgroundResource(R.drawable.affternoon_selected)
                                 }
@@ -167,6 +251,7 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
                                     textView.background = null
                                 }
                             }
+
                         } else {
                             textView.setTextColorRes(R.color.example_1_white_light)
                             textView.background = null
@@ -187,72 +272,77 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
             }
         }
         workingRef.child(intMonth.toString()).addValueEventListener(eventListener)
-
-        weekModeCheckBox.setOnCheckedChangeListener { _, monthToWeek ->
-            val firstDate = calendarView.findFirstVisibleDay()?.date ?: return@setOnCheckedChangeListener
-            val lastDate = calendarView.findLastVisibleDay()?.date ?: return@setOnCheckedChangeListener
-
-            val oneWeekHeight = calendarView.dayHeight
-            val oneMonthHeight = oneWeekHeight * 6
-
-            val oldHeight = if (monthToWeek) oneMonthHeight else oneWeekHeight
-            val newHeight = if (monthToWeek) oneWeekHeight else oneMonthHeight
-
-            // Animate calendar height changes.
-            val animator = ValueAnimator.ofInt(oldHeight, newHeight)
-            animator.addUpdateListener { animator ->
-                calendarView.updateLayoutParams {
-                    height = animator.animatedValue as Int
-                }
-            }
-
-            // When changing from month to week mode, we change the calendar's
-            // config at the end of the animation(doOnEnd) but when changing
-            // from week to month mode, we change the calendar's config at
-            // the start of the animation(doOnStart). This is so that the change
-            // in height is visible. You can do this whichever way you prefer.
-
-            animator.doOnStart {
-                if (!monthToWeek) {
-                    calendarView.apply {
-                        inDateStyle = InDateStyle.ALL_MONTHS
-                        maxRowCount = 6
-                        hasBoundaries = true
-                    }
-                }
-            }
-            animator.doOnEnd {
-                if (monthToWeek) {
-                    calendarView.apply {
-                        inDateStyle = InDateStyle.FIRST_MONTH
-                        maxRowCount = 1
-                        hasBoundaries = false
-                    }
-                }
-
-                if (monthToWeek) {
-                    // We want the first visible day to remain
-                    // visible when we change to week mode.
-                    if(today.monthValue==intMonth){
-                        calendarView.scrollToDate(today)
-                    }
-                } else {
-                    // When changing to month mode, we choose current
-                    // month if it is the only one in the current frame.
-                    // if we have multiple months in one frame, we prefer
-                    // the second one unless it's an outDate in the last index.
-                    if (firstDate.yearMonth == lastDate.yearMonth) {
-                        calendarView.scrollToMonth(firstDate.yearMonth)
-                    } else {
-                        // We compare the next with the last month on the calendar so we don't go over.
-                        calendarView.scrollToMonth(minOf(firstDate.yearMonth.next, lastMonth))
-                    }
-                }
-            }
-            animator.duration = 250
-            animator.start()
-        }
+        val spinnerLeft = arrayOf("Full Working Day","Morning","Afternoon")
+        val arrayAdapterLeft = ArrayAdapter(this@CurrentWorkingCalMothViewActivity,R.layout.support_simple_spinner_dropdown_item,spinnerLeft)
+        spTypeOfTime.adapter = arrayAdapterLeft
+//
+//        weekModeCheckBox.setOnCheckedChangeListener { _, monthToWeek ->
+//            val firstDate = calendarView.findFirstVisibleDay()?.date ?: return@setOnCheckedChangeListener
+//            val lastDate = calendarView.findLastVisibleDay()?.date ?: return@setOnCheckedChangeListener
+//
+//            val oneWeekHeight = calendarView.dayHeight
+//            val oneMonthHeight = oneWeekHeight * 6
+//
+//            val oldHeight = if (monthToWeek) oneMonthHeight else oneWeekHeight
+//            val newHeight = if (monthToWeek) oneWeekHeight else oneMonthHeight
+//
+//            // Animate calendar height changes.
+//            val animator = ValueAnimator.ofInt(oldHeight, newHeight)
+//            animator.addUpdateListener { animator ->
+//                calendarView.updateLayoutParams {
+//                    height = animator.animatedValue as Int
+//                }
+//            }
+//
+//            // When changing from month to week mode, we change the calendar's
+//            // config at the end of the animation(doOnEnd) but when changing
+//            // from week to month mode, we change the calendar's config at
+//            // the start of the animation(doOnStart). This is so that the change
+//            // in height is visible. You can do this whichever way you prefer.
+//
+//            animator.doOnStart {
+//                if (!monthToWeek) {
+//                    calendarView.apply {
+//                        inDateStyle = InDateStyle.ALL_MONTHS
+//                        maxRowCount = 6
+//                        hasBoundaries = true
+//                    }
+//                }
+//            }
+//            animator.doOnEnd {
+//                if (monthToWeek) {
+//                    calendarView.apply {
+//                        inDateStyle = InDateStyle.FIRST_MONTH
+//                        maxRowCount = 1
+//                        hasBoundaries = false
+//                    }
+//                }
+//
+//                if (monthToWeek) {
+//                    // We want the first visible day to remain
+//                    // visible when we change to week mode.
+//                    if(today.monthValue==intMonth){
+//                        calendarView.scrollToDate(today)
+//                    }
+//                } else {
+//                    // When changing to month mode, we choose current
+//                    // month if it is the only one in the current frame.
+//                    // if we have multiple months in one frame, we prefer
+//                    // the second one unless it's an outDate in the last index.
+//                    if (firstDate.yearMonth == lastDate.yearMonth) {
+//                        calendarView.scrollToMonth(firstDate.yearMonth)
+//                    } else {
+//                        // We compare the next with the last month on the calendar so we don't go over.
+//                        calendarView.scrollToMonth(minOf(firstDate.yearMonth.next, lastMonth))
+//                    }
+//                }
+//            }
+//            animator.duration = 250
+//            animator.start()
+//        }
     }
+    private class DataWorkingDay(var type:Int,var date: LocalDate)
+
     class DayViewContainer(view: View) : ViewContainer(view) {
         val textView = view.findViewById<TextView>(R.id.exOneDayText)
 

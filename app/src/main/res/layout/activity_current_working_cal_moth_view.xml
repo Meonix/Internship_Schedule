@@ -25,7 +25,8 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <com.kizitonwose.calendarview.CalendarView
@@ -37,8 +38,29 @@
             app:cv_outDateStyle="endOfRow"
             app:cv_inDateStyle="allMonths"
             app:cv_scrollMode="paged" />
-
+        <Spinner
+            android:layout_gravity="center_horizontal"
+            android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+            android:id="@+id/spTypeOfTime"
+            android:layout_width="200dp"
+            android:spinnerMode="dropdown"
+            android:layout_margin="10dp"
+            android:gravity="start"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Update Working Time"
+            android:id="@+id/btUpdateTimeWorking"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_marginBottom="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <CheckBox
+            android:visibility="gone"
             android:id="@+id/weekModeCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,5 +72,5 @@
             android:textSize="18sp"
             android:layout_gravity="bottom|center_horizontal" />
 
-    </FrameLayout>
+    </LinearLayout>
 </LinearLayout>

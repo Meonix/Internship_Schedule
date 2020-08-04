@@ -64,6 +64,7 @@ class CurrentWorkingCalFragment : Fragment() {
                 }
                 else if(position == "system_admin" || position == "admin"){
                     //User is admin or system admin
+                    tvTopOfRv.visibility = View.VISIBLE
                     rvCurrentWorkingCal.visibility = View.VISIBLE
                     setupRecycleView()
                 }
