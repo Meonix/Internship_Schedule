@@ -2,6 +2,7 @@ package com.mionix.baseapp.ui.fragment
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -105,6 +106,9 @@ class CurrentWorkingCalFragment : Fragment() {
 //                        if(postSnapshot.child("uid").getValue(String::class.java)==it.uid){
 //                            postSnapshot.ref.removeValue()
 //                        }
+                }
+                mUsersAdapter.onBackgroundItemChange={
+                    it.setTextColor(Color.RED)
                 }
             }
             override fun onCancelled(databaseError: DatabaseError?) {
