@@ -4,14 +4,30 @@
     android:layout_height="wrap_content"
     android:padding="5dp"
     android:orientation="vertical">
-    <TextView
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="12dp"
-        android:layout_width="wrap_content"
-        android:id="@+id/itemUserAdmin_tvNameOfUser"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="2"
+        android:layout_height="0dp">
+        <TextView
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1.9"
+            android:layout_width="wrap_content"
+            android:id="@+id/itemUserAdmin_tvNameOfUser"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/itemUserAdmin_btDeleteUser"
+            android:layout_weight="0.1"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginTop="-5dp"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_close" />
+    </LinearLayout>
+
     <TextView
         android:layout_marginTop="12dp"
         android:layout_marginStart="12dp"
@@ -27,18 +43,6 @@
         android:id="@+id/itemUserAdmin_tvPosition"
         android:textSize="13sp"
         android:textAllCaps="false"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:layout_marginTop="12dp"
-        android:background="@drawable/button_border_bottom_layout"
-        android:layout_marginStart="12dp"
-        android:backgroundTint="@color/red"
-        android:layout_width="wrap_content"
-        android:text="Delete User"
-        android:textAllCaps="false"
-        android:id="@+id/itemUserAdmin_btDeleteUser"
-        android:textSize="13sp"
-        android:textStyle="bold"
         android:layout_height="wrap_content"/>
     <View
         android:layout_marginTop="5dp"

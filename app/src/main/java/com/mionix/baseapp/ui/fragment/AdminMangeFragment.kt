@@ -46,23 +46,8 @@ class AdminMangeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupView()
         setupRecycleView()
-        handleOnClick()
     }
 
-    private fun handleOnClick() {
-        btOpenTime.onClickThrottled {
-            if(btOpenTime.text.toString() == "Open") {
-                val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
-                eventRef.child("register_time").setValue(1)
-                btOpenTime.text = "Cancel"
-            }else{
-                val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
-                eventRef.child("register_time").setValue(0)
-                btOpenTime.text = "Open"
-            }
-
-        }
-    }
 
     private fun setupRecycleView() {
         val eventListener: ValueEventListener = object : ValueEventListener {
@@ -101,7 +86,7 @@ class AdminMangeFragment : Fragment() {
     }
 
     private fun setupView() {
-        val spinnerCreateAccountOption = arrayOf("- Select One -","Admin","Intern")
+        val spinnerCreateAccountOption = arrayOf("- Add -","Admin","Intern")
         val arrayAdapterCreateAccountOption = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerCreateAccountOption)
         spCreateAccountOption.adapter = arrayAdapterCreateAccountOption
         spCreateAccountOption.onItemSelectedListener = object :

@@ -66,6 +66,7 @@ class CurrentWorkingCalFragment : Fragment() {
                 else if(position == "system_admin" || position == "admin"){
                     //User is admin or system admin
                     tvTopOfRv.visibility = View.VISIBLE
+                    btOpenTime.visibility = View.VISIBLE
                     rvCurrentWorkingCal.visibility = View.VISIBLE
                     setupRecycleView()
                 }
@@ -78,20 +79,28 @@ class CurrentWorkingCalFragment : Fragment() {
 
         val eventListener2 = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val registerTime = dataSnapshot.child("register_time").getValue(Int::class.java)
-                if(registerTime == 1){
+                val registerTime = dataSnapshot.child("Event").child("register_time").getValue(Int::class.java)
+                val position = dataSnapshot.child("Users").child(currentUser?.uid).child("position").getValue(String::class.java)
+                if(registerTime == 1 && (position != "system_admin" && position != "admin")){
                     //User is intern
-                    btRegisterTimeWorking.visibility = View.VISIBLE
+                    if(btRegisterTimeWorking!=null){
+                        btRegisterTimeWorking.visibility = View.VISIBLE
+                        btOpenTime.visibility =View.INVISIBLE
+                    }
                 }
                 else{
-                    btRegisterTimeWorking.visibility = View.INVISIBLE
+                    if(btRegisterTimeWorking!=null){
+                        btRegisterTimeWorking.visibility = View.INVISIBLE
+                        btOpenTime.visibility = View.VISIBLE
+                    }
+
                 }
             }
             override fun onCancelled(databaseError: DatabaseError?) {
 
             }
         }
-        val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
+        val eventRef = FirebaseDatabase.getInstance().reference
         eventRef.addValueEventListener(eventListener2)
     }
 
@@ -237,6 +246,18 @@ class CurrentWorkingCalFragment : Fragment() {
         btRegisterTimeWorking.onClickThrottled {
             val intent = Intent(context, RegisterTimeWorkingActivity::class.java)
             startActivity(intent)
+        }
+        btOpenTime.onClickThrottled {
+            if(btOpenTime.text.toString() == "Open Registration Time") {
+                val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
+                eventRef.child("register_time").setValue(1)
+                btOpenTime.text = "Close Registration Time"
+            }else{
+                val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
+                eventRef.child("register_time").setValue(0)
+                btOpenTime.text = "Open Registration Time"
+            }
+
         }
     }
     private fun openMothWorkingCalendar(intMoth: Int,uid :String) {
