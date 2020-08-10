@@ -18,6 +18,7 @@ import com.mionix.baseapp.model.UserModel
 import com.mionix.baseapp.ui.activity.CreateAccountActivity
 import com.mionix.baseapp.ui.adapter.AdminMangeAdapter
 import com.mionix.baseapp.utils.AppExecutors
+import com.mionix.baseapp.utils.onClickThrottled
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_admin_mange.*
 import javax.mail.*
@@ -45,6 +46,22 @@ class AdminMangeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupView()
         setupRecycleView()
+        handleOnClick()
+    }
+
+    private fun handleOnClick() {
+        btOpenTime.onClickThrottled {
+            if(btOpenTime.text.toString() == "Open") {
+                val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
+                eventRef.child("register_time").setValue(1)
+                btOpenTime.text = "Cancel"
+            }else{
+                val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
+                eventRef.child("register_time").setValue(0)
+                btOpenTime.text = "Open"
+            }
+
+        }
     }
 
     private fun setupRecycleView() {

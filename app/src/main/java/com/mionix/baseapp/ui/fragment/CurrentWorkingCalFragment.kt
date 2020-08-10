@@ -75,6 +75,24 @@ class CurrentWorkingCalFragment : Fragment() {
             }
         }
         usersRef.child(currentUser?.uid).addValueEventListener(eventListener)
+
+        val eventListener2 = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val registerTime = dataSnapshot.child("register_time").getValue(Int::class.java)
+                if(registerTime == 1){
+                    //User is intern
+                    btRegisterTimeWorking.visibility = View.VISIBLE
+                }
+                else{
+                    btRegisterTimeWorking.visibility = View.INVISIBLE
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError?) {
+
+            }
+        }
+        val eventRef = FirebaseDatabase.getInstance().reference.child("Event")
+        eventRef.addValueEventListener(eventListener2)
     }
 
     private fun setupRecycleView() {
