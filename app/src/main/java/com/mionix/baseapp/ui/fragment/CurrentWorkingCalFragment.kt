@@ -62,11 +62,13 @@ class CurrentWorkingCalFragment : Fragment() {
                     //User is intern
                     llCurrentWorkingCal.visibility = View.VISIBLE
                     btRegisterTimeWorking.visibility = View.VISIBLE
+                    btOpenTime.visibility = View.INVISIBLE
                 }
                 else if(position == "system_admin" || position == "admin"){
                     //User is admin or system admin
                     tvTopOfRv.visibility = View.VISIBLE
                     btOpenTime.visibility = View.VISIBLE
+                    btRegisterTimeWorking.visibility = View.INVISIBLE
                     rvCurrentWorkingCal.visibility = View.VISIBLE
                     setupRecycleView()
                 }
@@ -88,7 +90,7 @@ class CurrentWorkingCalFragment : Fragment() {
                         btOpenTime.visibility =View.INVISIBLE
                     }
                 }
-                else{
+                else if(registerTime == 0 && (position == "system_admin" || position == "admin")){
                     if(btRegisterTimeWorking!=null){
                         btRegisterTimeWorking.visibility = View.INVISIBLE
                         btOpenTime.visibility = View.VISIBLE
@@ -105,44 +107,47 @@ class CurrentWorkingCalFragment : Fragment() {
     }
 
     private fun setupRecycleView() {
-        val eventListener: ValueEventListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                listUser.clear()
-                for (postSnapshot in dataSnapshot.children) {
-                    val firstName = postSnapshot.child("first_name").getValue(String::class.java)
-                    val lastName = postSnapshot.child("last_name").getValue(String::class.java)
-                    val phone = postSnapshot.child("phone").getValue(String::class.java)
-                    val position = postSnapshot.child("position").getValue(String::class.java)
-                    val nickName = postSnapshot.child("nick_name").getValue(String::class.java)
-                    val birthDay = postSnapshot.child("birth_day").getValue(String::class.java)
-                    val sex = postSnapshot.child("sex").getValue(Int::class.java)
-                    val uid = postSnapshot.child("uid").getValue(String::class.java)
-                    if(position != "system_admin" && position != "admin"){
-                        listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
+        if(rvCurrentWorkingCal != null){
+            val eventListener: ValueEventListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    listUser.clear()
+                    for (postSnapshot in dataSnapshot.children) {
+                        val firstName = postSnapshot.child("first_name").getValue(String::class.java)
+                        val lastName = postSnapshot.child("last_name").getValue(String::class.java)
+                        val phone = postSnapshot.child("phone").getValue(String::class.java)
+                        val position = postSnapshot.child("position").getValue(String::class.java)
+                        val nickName = postSnapshot.child("nick_name").getValue(String::class.java)
+                        val birthDay = postSnapshot.child("birth_day").getValue(String::class.java)
+                        val sex = postSnapshot.child("sex").getValue(Int::class.java)
+                        val uid = postSnapshot.child("uid").getValue(String::class.java)
+                        if(position != "system_admin" && position != "admin"){
+                            listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
+                        }
                     }
-                }
-                mUsersAdapter = CurrentWorkingCalAdapter(listUser)
-                rvCurrentWorkingCal.adapter = mUsersAdapter
-                rvCurrentWorkingCal.layoutManager = LinearLayoutManager(context)
-                (rvCurrentWorkingCal.adapter as CurrentWorkingCalAdapter).notifyDataSetChanged()
-                mUsersAdapter.onItemClick={
-                    llCurrentWorkingCal.visibility = View.VISIBLE
-                    it.uid?.let {uid->
-                        handleOnClick(uid)
-                    }
+                    mUsersAdapter = CurrentWorkingCalAdapter(listUser)
+                    rvCurrentWorkingCal.adapter = mUsersAdapter
+                    rvCurrentWorkingCal.layoutManager = LinearLayoutManager(context)
+                    (rvCurrentWorkingCal.adapter as CurrentWorkingCalAdapter).notifyDataSetChanged()
+                    mUsersAdapter.onItemClick={
+                        llCurrentWorkingCal.visibility = View.VISIBLE
+                        it.uid?.let {uid->
+                            handleOnClick(uid)
+                        }
 //                        if(postSnapshot.child("uid").getValue(String::class.java)==it.uid){
 //                            postSnapshot.ref.removeValue()
 //                        }
+                    }
+                    mUsersAdapter.onBackgroundItemChange={
+                        it.setTextColor(Color.RED)
+                    }
                 }
-                mUsersAdapter.onBackgroundItemChange={
-                    it.setTextColor(Color.RED)
-                }
-            }
-            override fun onCancelled(databaseError: DatabaseError?) {
+                override fun onCancelled(databaseError: DatabaseError?) {
 
+                }
             }
+            usersRef.addValueEventListener(eventListener)
         }
-        usersRef.addValueEventListener(eventListener)
+
     }
 
     private fun setupView() {

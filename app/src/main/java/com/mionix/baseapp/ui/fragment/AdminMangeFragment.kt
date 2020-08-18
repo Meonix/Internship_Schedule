@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mionix.baseapp.R
 import com.mionix.baseapp.model.UserModel
@@ -21,6 +22,7 @@ import com.mionix.baseapp.utils.AppExecutors
 import com.mionix.baseapp.utils.onClickThrottled
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_admin_mange.*
+import java.lang.reflect.Array
 import javax.mail.*
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
@@ -30,6 +32,8 @@ class AdminMangeFragment : Fragment() {
     private lateinit var mUsersAdapter : AdminMangeAdapter
     private var usersRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
     private var listUser = mutableListOf<UserModel>()
+    private var mAuth = FirebaseAuth.getInstance()
+    private var currentUser = mAuth.currentUser
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -45,11 +49,11 @@ class AdminMangeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
-        setupRecycleView()
+        setupRecycleView(false)
     }
 
 
-    private fun setupRecycleView() {
+    private fun setupRecycleView(isAdminFlag :Boolean) {
         val eventListener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 listUser.clear()
@@ -63,7 +67,29 @@ class AdminMangeFragment : Fragment() {
                     val sex = postSnapshot.child("sex").getValue(Int::class.java)
                     val uid = postSnapshot.child("uid").getValue(String::class.java)
                     if(position != "system_admin"){
-                        listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
+                        when {
+                            spFilter.selectedItem.toString()=="Intern" -> {
+                                if(position != "admin"){
+                                    listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
+                                }
+                            }
+                            spFilter.selectedItem.toString()=="Admin" -> {
+                                if(position == "admin"){
+                                    listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
+                                }
+                            }
+                            else -> {
+                                if(isAdminFlag){
+                                    if(position != "admin"){
+                                        listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
+                                    }
+                                }
+                                else{
+                                        listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
+                                }
+                            }
+                        }
+
                     }
                 }
                 mUsersAdapter = AdminMangeAdapter(listUser)
@@ -86,30 +112,97 @@ class AdminMangeFragment : Fragment() {
     }
 
     private fun setupView() {
-        val spinnerCreateAccountOption = arrayOf("- Add -","Admin","Intern")
-        val arrayAdapterCreateAccountOption = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerCreateAccountOption)
-        spCreateAccountOption.adapter = arrayAdapterCreateAccountOption
-        spCreateAccountOption.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parentView: AdapterView<*>?,
-                selectedItemView: View,
-                position: Int,
-                id: Long
-            ) {
-                if(spCreateAccountOption.selectedItem.toString()=="Intern"){
-                    val intent = Intent(context, CreateAccountActivity::class.java)
-                    startActivity(intent)
-                }
-                if(spCreateAccountOption.selectedItem.toString()=="Admin"){
-//                           Log.d("DUY","ADqwe")
-                }
+        val eventListener: ValueEventListener = object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+
             }
 
-            override fun onNothingSelected(parentView: AdapterView<*>?) {
+            override fun onDataChange(p0: DataSnapshot?) {
+                val position = p0?.child("position")?.value
+                val spinnerCreateAccountOption= mutableListOf("- Add -")
+                if(position == "system_admin"){
+                    spinnerCreateAccountOption.add("Admin")
+                    spinnerCreateAccountOption.add("Intern")
+                }
+                else{
+                    spinnerCreateAccountOption.add("Intern")
+                }
 
+                val arrayAdapterCreateAccountOption = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerCreateAccountOption)
+                spCreateAccountOption.adapter = arrayAdapterCreateAccountOption
+                spCreateAccountOption.onItemSelectedListener = object :
+                    AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parentView: AdapterView<*>?,
+                        selectedItemView: View,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if(spCreateAccountOption.selectedItem.toString()=="Intern"){
+                            val intent = Intent(context, CreateAccountActivity::class.java)
+                            intent.putExtra(CreateAccountActivity.TYPE_USER,0)
+                            startActivity(intent)
+                        }
+                        else if(spCreateAccountOption.selectedItem.toString()=="Admin"){
+                            val intent = Intent(context, CreateAccountActivity::class.java)
+                            intent.putExtra(CreateAccountActivity.TYPE_USER,1)
+                            startActivity(intent)
+                        }
+                    }
+
+                    override fun onNothingSelected(parentView: AdapterView<*>?) {
+
+                    }
+                }
+
+                val spinnerFilter = mutableListOf("No Filter")
+                if(position == "system_admin"){
+                    spinnerFilter.add("Admin")
+                    spinnerFilter.add("Intern")
+                }
+                else{
+                    spinnerFilter.add("Intern")
+                }
+
+                val arrayAdapterFilter = ArrayAdapter(context!!,R.layout.support_simple_spinner_dropdown_item,spinnerFilter)
+                spFilter.adapter = arrayAdapterFilter
+                spFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                    }
+
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        when {
+                            spFilter.selectedItem.toString()=="Intern" -> {
+                                listUser.clear()
+                                setupRecycleView(false)
+                            }
+                            spFilter.selectedItem.toString()=="Admin" -> {
+                                listUser.clear()
+                                setupRecycleView(false)
+                            }
+                            else -> {
+                                listUser.clear()
+                                var isAdminFlag = false
+                                if(spFilter.adapter.count == 2){
+                                    isAdminFlag = true
+                                }
+                                setupRecycleView(isAdminFlag)
+                            }
+                        }
+                    }
+
+                }
             }
         }
+        usersRef.child(currentUser?.uid).addValueEventListener(eventListener)
+
+
     }
 
     override fun onStart() {

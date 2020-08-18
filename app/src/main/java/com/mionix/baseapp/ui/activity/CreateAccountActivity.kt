@@ -35,6 +35,10 @@ class CreateAccountActivity : BaseBackButtonActivity() {
     private var RootRef: DatabaseReference? = FirebaseDatabase.getInstance().reference
     private var appExecutors = AppExecutors()
     private val mPreferences by inject<Preferences>()
+    private var typeUser = 0
+    companion object {
+        const val TYPE_USER ="type_user"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +53,10 @@ class CreateAccountActivity : BaseBackButtonActivity() {
         loadingBar!!.setTitle("Creating New Account")
         loadingBar!!.setMessage("Please wait, while we are creating new account for you...")
         loadingBar!!.setCanceledOnTouchOutside(true)
+        typeUser = intent.getIntExtra(TYPE_USER,0)
+        if(typeUser == 1){
+            llAdmin.visibility = View.VISIBLE
+        }
     }
     private fun setUpActionKeyBoard(view: View){
         // Set up touch listener for non-text box views to hide keyboard.
@@ -103,6 +111,10 @@ class CreateAccountActivity : BaseBackButtonActivity() {
                             .setValue(nickName)
                         RootRef!!.child("Users").child(currentUserID).child("uid")
                             .setValue(currentUserID)
+                        if(typeUser == 1){
+                            RootRef!!.child("Users").child(currentUserID).child("position")
+                                .setValue("admin")
+                        }
 //                        RootRef!!.child("Users").child(currentUserID).child("position")
 //                            .setValue(edPosition.text.toString())
                         onBackPressed()

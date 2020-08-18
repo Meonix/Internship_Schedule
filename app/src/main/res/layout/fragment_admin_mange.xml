@@ -6,17 +6,32 @@
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.AdminMangeFragment">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Spinner
+            android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+            android:id="@+id/spFilter"
+            android:layout_width="wrap_content"
+            android:spinnerMode="dropdown"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:gravity="end"
+            android:layout_height="wrap_content"/>
+        <Spinner
+            android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
+            android:id="@+id/spCreateAccountOption"
+            android:layout_width="wrap_content"
+            android:spinnerMode="dropdown"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:background="@drawable/button_border_bottom_layout"
+            android:gravity="end"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
-    <Spinner
-        android:dropDownVerticalOffset="?attr/dropdownListPreferredItemHeight"
-        android:id="@+id/spCreateAccountOption"
-        android:layout_width="wrap_content"
-        android:spinnerMode="dropdown"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
-        android:background="@drawable/button_border_bottom_layout"
-        android:gravity="start"
-        android:layout_height="wrap_content"/>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:id="@+id/rvListUserFragmentAdminMange"
