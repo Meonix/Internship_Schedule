@@ -82,10 +82,9 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
                     }
                 }
             }
-            val calendarDay =  Calendar.getInstance()
-            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("full_time").setValue(fullTime)
-            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("afternoon_time").setValue(afternoonTime)
-            workingRef.child((calendarDay.get(Calendar.MONTH)+2).toString()).child("morning_time").setValue(morningTime).addOnCompleteListener {
+            workingRef.child(intMonth.toString()).child("full_time").setValue(fullTime)
+            workingRef.child(intMonth.toString()).child("afternoon_time").setValue(afternoonTime)
+            workingRef.child(intMonth.toString()).child("morning_time").setValue(morningTime).addOnCompleteListener {
                 if(it.isSuccessful){
                     Toast.makeText(this@CurrentWorkingCalMothViewActivity,"Update Successful..", Toast.LENGTH_SHORT).show()
                 }
@@ -111,7 +110,7 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
         intent.getStringExtra(KEY_UID)?.let {
             uid = it
         }
-        val workingRef = userRef.child(uid).child("working_time")
+        val currentUserRef = userRef.child(uid)
         calendarView.dayBinder = object : DayBinder<DayViewContainer> {
             // Called only when a new container is needed.
             override fun create(view: View) = DayViewContainer(view)
@@ -133,9 +132,10 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
         //create class DayViewContainer
         val eventListener: ValueEventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val dataFullTime = dataSnapshot.child("full_time").getValue(String::class.java)
-                val dataMorningTime = dataSnapshot.child("morning_time").getValue(String::class.java)
-                val dataAfternoonTime = dataSnapshot.child("afternoon_time").getValue(String::class.java)
+                val dataFullTime = dataSnapshot.child("working_time").child(intMonth.toString()).child("full_time").getValue(String::class.java)
+                val dataMorningTime = dataSnapshot.child("working_time").child(intMonth.toString()).child("morning_time").getValue(String::class.java)
+                val dataAfternoonTime = dataSnapshot.child("working_time").child(intMonth.toString()).child("afternoon_time").getValue(String::class.java)
+                val position = dataSnapshot.child("position").getValue(String::class.java)
                 if(dataFullTime!=null){
                     val arrayData = dataFullTime.split(",")
                     for (x in 1 until arrayData.size){
@@ -160,7 +160,7 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
                     val textView = view.findViewById<TextView>(R.id.exOneDayText)
                     init {
                         view.setOnClickListener {
-                            if (day.owner == DayOwner.THIS_MONTH) {
+                            if (day.owner == DayOwner.THIS_MONTH && (position == "admin" ||position =="system_admin" )) {
                                 if (selectedDates.contains(day.date)||
                                     fullTimeDateList.contains(day.date)||
                                     morningTimeDateList.contains(day.date)||
@@ -271,7 +271,7 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
 
             }
         }
-        workingRef.child(intMonth.toString()).addValueEventListener(eventListener)
+        currentUserRef.addValueEventListener(eventListener)
         val spinnerLeft = arrayOf("Full Working Day","Morning","Afternoon")
         val arrayAdapterLeft = ArrayAdapter(this@CurrentWorkingCalMothViewActivity,R.layout.support_simple_spinner_dropdown_item,spinnerLeft)
         spTypeOfTime.adapter = arrayAdapterLeft
