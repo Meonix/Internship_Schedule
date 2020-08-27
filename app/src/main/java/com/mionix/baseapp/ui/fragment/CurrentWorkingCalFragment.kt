@@ -51,7 +51,7 @@ class CurrentWorkingCalFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupView()
         checkCurrentUser()
-        currentUser?.uid?.let { handleOnClick(it) }
+
     }
 
     private fun checkCurrentUser() {
@@ -63,6 +63,11 @@ class CurrentWorkingCalFragment : Fragment() {
                     llCurrentWorkingCal.visibility = View.VISIBLE
                     btRegisterTimeWorking.visibility = View.VISIBLE
                     btOpenTime.visibility = View.INVISIBLE
+                    currentUser?.uid?.let {
+                        if (position != null) {
+                            handleOnClick(it,position)
+                        }
+                    }
                 }
                 else if(position == "system_admin" || position == "admin"){
                     //User is admin or system admin
@@ -71,6 +76,7 @@ class CurrentWorkingCalFragment : Fragment() {
                     btRegisterTimeWorking.visibility = View.INVISIBLE
                     rvCurrentWorkingCal.visibility = View.VISIBLE
                     setupRecycleView()
+                    currentUser?.uid?.let { handleOnClick(it,position) }
                 }
             }
             override fun onCancelled(databaseError: DatabaseError?) {
@@ -111,6 +117,7 @@ class CurrentWorkingCalFragment : Fragment() {
             val eventListener: ValueEventListener = object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     listUser.clear()
+                    var thisPosition = ""
                     for (postSnapshot in dataSnapshot.children) {
                         val firstName = postSnapshot.child("first_name").getValue(String::class.java)
                         val lastName = postSnapshot.child("last_name").getValue(String::class.java)
@@ -123,6 +130,11 @@ class CurrentWorkingCalFragment : Fragment() {
                         if(position != "system_admin" && position != "admin"){
                             listUser.add(UserModel(firstName,lastName,nickName,birthDay,phone,position,sex,uid))
                         }
+                        if(uid == currentUser?.uid){
+                            if (position != null) {
+                                thisPosition = position
+                            }
+                        }
                     }
                     mUsersAdapter = CurrentWorkingCalAdapter(listUser)
                     rvCurrentWorkingCal.adapter = mUsersAdapter
@@ -131,7 +143,7 @@ class CurrentWorkingCalFragment : Fragment() {
                     mUsersAdapter.onItemClick={
                         llCurrentWorkingCal.visibility = View.VISIBLE
                         it.uid?.let {uid->
-                            handleOnClick(uid)
+                            handleOnClick(uid,thisPosition)
                         }
 //                        if(postSnapshot.child("uid").getValue(String::class.java)==it.uid){
 //                            postSnapshot.ref.removeValue()
@@ -211,42 +223,42 @@ class CurrentWorkingCalFragment : Fragment() {
 
     }
 
-    private fun handleOnClick(uid:String) {
+    private fun handleOnClick(uid:String,position:String) {
         btJanuary.onClickThrottled {
-            openMothWorkingCalendar(1,uid)
+            openMothWorkingCalendar(1,uid,position)
         }
         btFebruary.onClickThrottled {
-            openMothWorkingCalendar(2,uid)
+            openMothWorkingCalendar(2,uid,position)
         }
         btMarch.onClickThrottled {
-            openMothWorkingCalendar(3,uid)
+            openMothWorkingCalendar(3,uid,position)
         }
         btApril.onClickThrottled {
-            openMothWorkingCalendar(4,uid)
+            openMothWorkingCalendar(4,uid,position)
         }
         btMay.onClickThrottled {
-            openMothWorkingCalendar(5,uid)
+            openMothWorkingCalendar(5,uid,position)
         }
         btJune.onClickThrottled {
-            openMothWorkingCalendar(6,uid)
+            openMothWorkingCalendar(6,uid,position)
         }
         btJuly.onClickThrottled {
-            openMothWorkingCalendar(7,uid)
+            openMothWorkingCalendar(7,uid,position)
         }
         btAugust.onClickThrottled {
-            openMothWorkingCalendar(8,uid)
+            openMothWorkingCalendar(8,uid,position)
         }
         btSeptember.onClickThrottled {
-            openMothWorkingCalendar(9,uid)
+            openMothWorkingCalendar(9,uid,position)
         }
         btOctober.onClickThrottled {
-            openMothWorkingCalendar(10,uid)
+            openMothWorkingCalendar(10,uid,position)
         }
         btNovember.onClickThrottled {
-            openMothWorkingCalendar(11,uid)
+            openMothWorkingCalendar(11,uid,position)
         }
         btDecember.onClickThrottled {
-            openMothWorkingCalendar(12,uid)
+            openMothWorkingCalendar(12,uid,position)
         }
         btRegisterTimeWorking.onClickThrottled {
             val intent = Intent(context, RegisterTimeWorkingActivity::class.java)
@@ -265,10 +277,11 @@ class CurrentWorkingCalFragment : Fragment() {
 
         }
     }
-    private fun openMothWorkingCalendar(intMoth: Int,uid :String) {
+    private fun openMothWorkingCalendar(intMoth: Int,uid :String,position:String) {
         val intent = Intent(context,CurrentWorkingCalMothViewActivity::class.java)
         intent.putExtra(CurrentWorkingCalMothViewActivity.KEY_MOTH,intMoth)
         intent.putExtra(CurrentWorkingCalMothViewActivity.KEY_UID,uid)
+        intent.putExtra(CurrentWorkingCalMothViewActivity.KEY_POSITION,position)
         startActivity(intent)
     }
 

@@ -29,10 +29,10 @@ class AdminMangeAdapter(private val data:MutableList<UserModel>): RecyclerView.A
     inner class UserList(itemView: View) : RecyclerView.ViewHolder(itemView){
         @SuppressLint("SetTextI18n")
         fun onBindData(model : UserModel){
-            itemView.itemUserAdmin_tvNameOfUser.text =  model.last_name + model.first_name +"("+model.nick_name+")"
+            itemView.itemUserAdmin_tvNameOfUser.text =  model.last_name + model.first_name +"  ("+model.nick_name+")"
 
-            itemView.itemUserAdmin_tvPhone.text = "Phone :${model.phone ?:""}"
-            itemView.itemUserAdmin_tvPosition.text = "Position:${model.postion ?: ""}"
+            itemView.itemUserAdmin_tvPhone.text = "Phone : ${model.phone ?:""}"
+            itemView.itemUserAdmin_tvPosition.text = "Position : ${model.postion ?: ""}"
             itemView.itemUserAdmin_btDeleteUser.setOnClickListener {
                 onItemClick?.invoke(model)
             }

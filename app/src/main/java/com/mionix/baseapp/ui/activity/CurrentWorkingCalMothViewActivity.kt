@@ -42,6 +42,7 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
     companion object {
         const val KEY_MOTH = "key_moth"
         const val KEY_UID = "uid"
+        const val KEY_POSITION = "position"
     }
     private var userRef = FirebaseDatabase.getInstance().reference.child("Users")
     private var fullTimeDateList = mutableSetOf<LocalDate>()
@@ -53,6 +54,7 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
     private val today = LocalDate.now()
     private var intMonth = 0
     private var uid = ""
+    private  var position = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_current_working_cal_moth_view)
@@ -110,6 +112,9 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
         intent.getStringExtra(KEY_UID)?.let {
             uid = it
         }
+        intent.getStringExtra(KEY_POSITION)?.let{
+            position = it
+        }
         val currentUserRef = userRef.child(uid)
         calendarView.dayBinder = object : DayBinder<DayViewContainer> {
             // Called only when a new container is needed.
@@ -135,7 +140,6 @@ class CurrentWorkingCalMothViewActivity : BaseBackButtonActivity() {
                 val dataFullTime = dataSnapshot.child("working_time").child(intMonth.toString()).child("full_time").getValue(String::class.java)
                 val dataMorningTime = dataSnapshot.child("working_time").child(intMonth.toString()).child("morning_time").getValue(String::class.java)
                 val dataAfternoonTime = dataSnapshot.child("working_time").child(intMonth.toString()).child("afternoon_time").getValue(String::class.java)
-                val position = dataSnapshot.child("position").getValue(String::class.java)
                 if(dataFullTime!=null){
                     val arrayData = dataFullTime.split(",")
                     for (x in 1 until arrayData.size){
